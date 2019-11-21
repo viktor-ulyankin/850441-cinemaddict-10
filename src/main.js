@@ -1,7 +1,5 @@
 "use strict";
 
-
-
 const FILM_COUNT = {
   LIST: 5,
   EXTRA: 2
@@ -10,8 +8,6 @@ const headerElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
 const mainElement = document.querySelector(`.main`);
 const filmListContainerElement = document.querySelector(`.films-list .films-list__container`);
-
-
 
 const getCardTemplate = () => {
   return (
