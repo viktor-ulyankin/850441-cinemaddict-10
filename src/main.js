@@ -1,9 +1,17 @@
 "use strict";
 
+
+
 const FILM_COUNT = {
   LIST: 5,
   EXTRA: 2
 };
+const headerElement = document.querySelector(`.header`);
+const footerElement = document.querySelector(`.footer`);
+const mainElement = document.querySelector(`.main`);
+const filmListContainerElement = document.querySelector(`.films-list .films-list__container`);
+
+
 
 const getCardTemplate = () => {
   return (
@@ -264,16 +272,11 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-const headerElement = document.querySelector(`.header`);
 render(headerElement, getUserRankTemplate(), `beforeEnd`);
 
-const footerElement = document.querySelector(`.footer`);
 render(footerElement, getDetailTemplate(), `afterEnd`);
 
-const mainElement = document.querySelector(`.main`);
 render(mainElement, getMainContentTemplate(), `beforeEnd`);
-
-const filmListContainerElement = document.querySelector(`.films-list .films-list__container`);
 
 new Array(FILM_COUNT.LIST)
     .fill(``)
