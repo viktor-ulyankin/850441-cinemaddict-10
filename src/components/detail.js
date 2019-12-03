@@ -1,4 +1,6 @@
-export const getDetailTemplate = (card) => {
+import {createElement} from '../utils.js';
+
+const getDetailTemplate = (card) => {
   const release = card.releaseDate
   .toDateString()
   .slice(4);
@@ -150,3 +152,26 @@ export const getDetailTemplate = (card) => {
 </section>`
   );
 };
+
+export default class Detail {
+  constructor(card = null) {
+    this._element = null;
+    this._card = card;
+  }
+
+  getTemplate() {
+    return getDetailTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
