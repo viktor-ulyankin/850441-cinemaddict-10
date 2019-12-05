@@ -45,7 +45,7 @@ render(mainElement, new FilterComponent(watchListFilmsQuantity(), historyFilmsQu
 
 render(mainElement, new SortComponent().getElement(), RenderPosition.BEFOREEND);
 
-render(mainElement, new MainContentComponent().getElement(), RenderPosition.BEFOREEND);
+render(mainElement, new MainContentComponent(cards.length).getElement(), RenderPosition.BEFOREEND);
 
 const filmListContainerElement = mainElement.querySelector(`.films-list .films-list__container`);
 let showingCardsCount = FilmCount.LIST;
@@ -61,14 +61,31 @@ const setList = (currentCards, targetElement) => currentCards.forEach((card) => 
     const detailComponent = new DetailComponent(card);
     const detailElement = detailComponent.getElement();
 
+    const removeDetail = () => {
+      document.body.removeChild(detailElement);
+    };
+
+    const onCloseClick = () => {
+      removeDetail();
+      closeDetailElement.removeEventListener(`click`, onCloseClick);
+    };
+
+    const onEscKeyDown = (evt) => {
+      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+      if (isEscKey) {
+        removeDetail();
+        document.removeEventListener(`keydown`, onEscKeyDown);
+      }
+    };
+
     render(footerElement, detailElement, RenderPosition.AFTEREND);
 
     const closeDetailElement = detailElement.querySelector(`.film-details__close-btn`);
 
-    closeDetailElement.addEventListener(`click`, () => {
-      detailComponent.removeElement();
-      document.querySelector(`.film-details`).remove();
-    });
+    closeDetailElement.addEventListener(`click`, onCloseClick);
+
+    document.addEventListener(`keydown`, onEscKeyDown);
   };
 
   for (let i = 0; i < cardClickElements.length; i++) {
@@ -97,15 +114,18 @@ if (mostCommentedCards.length) {
 }
 
 const showMoreButtonElement = mainElement.querySelector(`.films-list__show-more`);
-showMoreButtonElement.addEventListener(`click`, () => {
-  const prevTasksCount = showingCardsCount;
-  showingCardsCount += FilmCount.LIST;
 
-  setList(cards.slice(prevTasksCount, showingCardsCount), filmListContainerElement);
+if (showMoreButtonElement) {
+  showMoreButtonElement.addEventListener(`click`, () => {
+    const prevTasksCount = showingCardsCount;
+    showingCardsCount += FilmCount.LIST;
 
-  if (showingCardsCount >= cards.length) {
-    showMoreButtonElement.remove();
-  }
-});
+    setList(cards.slice(prevTasksCount, showingCardsCount), filmListContainerElement);
+
+    if (showingCardsCount >= cards.length) {
+      showMoreButtonElement.remove();
+    }
+  });
+}
 
 footerElement.querySelector(`.footer__statistics p`).textContent = `${cards.length} movies inside`;
