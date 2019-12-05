@@ -1,11 +1,13 @@
-import {getCardTemplate} from './components/card.js';
-import {getDetailTemplate} from './components/detail.js';
-import {getFiltersTemplate} from './components/filters.js';
-import {getMainContentTemplate} from './components/main-content.js';
-import {getShowMoreButtonTemplate} from './components/show-more-button.js';
-import {getUserRankTemplate} from './components/user-rank.js';
+import CardComponent from './components/card.js';
+import DetailComponent from './components/detail.js';
+import FilterComponent from './components/filter.js';
+import SortComponent from './components/sort.js';
+import MainContentComponent from './components/main-content.js';
+import ShowMoreButtonComponent from './components/show-more-button.js';
+import UserRankComponent from './components/user-rank.js';
 import {generateCards} from './mock/card.js';
 import {getUserRank} from './mock/user-rank.js';
+import {render, RenderPosition} from './utils.js';
 
 const FilmCount = {
   ALL: 15,
@@ -31,45 +33,65 @@ const headerElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
 const mainElement = document.querySelector(`.main`);
 
-const onWatchListFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnWatchList ? 1 : 0), 0);
+const watchListFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnWatchList ? 1 : 0), 0);
 
-const onHistoryFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnHistory ? 1 : 0), 0);
+const historyFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnHistory ? 1 : 0), 0);
 
-const onFavoritesFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnFavorites ? 1 : 0), 0);
+const favoritesFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnFavorites ? 1 : 0), 0);
 
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
+render(headerElement, new UserRankComponent(getUserRank()).getElement(), RenderPosition.BEFOREEND);
 
-render(headerElement, getUserRankTemplate(getUserRank()), `beforeEnd`);
+render(mainElement, new FilterComponent(watchListFilmsQuantity(), historyFilmsQuantity(), favoritesFilmsQuantity()).getElement(), RenderPosition.BEFOREEND);
 
-render(footerElement, getDetailTemplate(cards[0]), `afterEnd`);
+render(mainElement, new SortComponent().getElement(), RenderPosition.BEFOREEND);
 
-render(mainElement, getFiltersTemplate(onWatchListFilmsQuantity(), onHistoryFilmsQuantity(), onFavoritesFilmsQuantity()), `beforeEnd`);
-
-render(mainElement, getMainContentTemplate(), `beforeEnd`);
+render(mainElement, new MainContentComponent().getElement(), RenderPosition.BEFOREEND);
 
 const filmListContainerElement = mainElement.querySelector(`.films-list .films-list__container`);
 let showingCardsCount = FilmCount.LIST;
 
-const setList = (start, end) => cards.slice(start, end).forEach((card) => render(filmListContainerElement, getCardTemplate(card), `beforeend`));
+const setList = (currentCards, targetElement) => currentCards.forEach((card) => {
+  const cardElement = new CardComponent(card).getElement();
 
-setList(0, showingCardsCount);
+  render(targetElement, cardElement, RenderPosition.BEFOREEND);
 
-render(filmListContainerElement, getShowMoreButtonTemplate(), `afterEnd`);
+  const cardClickElements = cardElement.querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`);
+
+  const onCardClick = () => {
+    const detailComponent = new DetailComponent(card);
+    const detailElement = detailComponent.getElement();
+
+    render(footerElement, detailElement, RenderPosition.AFTEREND);
+
+    const closeDetailElement = detailElement.querySelector(`.film-details__close-btn`);
+
+    closeDetailElement.addEventListener(`click`, () => {
+      detailComponent.removeElement();
+      document.querySelector(`.film-details`).remove();
+    });
+  };
+
+  for (let i = 0; i < cardClickElements.length; i++) {
+    cardClickElements[i].addEventListener(`click`, onCardClick);
+  }
+});
+
+setList(cards.slice(0, showingCardsCount), filmListContainerElement);
+
+render(filmListContainerElement, new ShowMoreButtonComponent().getElement(), RenderPosition.AFTEREND);
 
 const [topRatedElements, mostCommentedElements] = mainElement.querySelectorAll(`.films-list--extra`);
 const topRatedContentElements = topRatedElements.querySelector(`.films-list__container`);
 const mostCommentedContentElements = mostCommentedElements.querySelector(`.films-list__container`);
 
 if (topRatedCards.length) {
-  topRatedCards.slice(0, FilmCount.EXTRA).forEach((card) => render(topRatedContentElements, getCardTemplate(card), `beforeend`));
+  setList(topRatedCards.slice(0, FilmCount.EXTRA), topRatedContentElements);
 } else {
   topRatedElements.remove();
 }
 
 if (mostCommentedCards.length) {
-  mostCommentedCards.slice(0, FilmCount.EXTRA).forEach((card) => render(mostCommentedContentElements, getCardTemplate(card), `beforeend`));
+  setList(mostCommentedCards.slice(0, FilmCount.EXTRA), mostCommentedContentElements);
 } else {
   mostCommentedElements.remove();
 }
@@ -79,7 +101,7 @@ showMoreButtonElement.addEventListener(`click`, () => {
   const prevTasksCount = showingCardsCount;
   showingCardsCount += FilmCount.LIST;
 
-  setList(prevTasksCount, showingCardsCount);
+  setList(cards.slice(prevTasksCount, showingCardsCount), filmListContainerElement);
 
   if (showingCardsCount >= cards.length) {
     showMoreButtonElement.remove();

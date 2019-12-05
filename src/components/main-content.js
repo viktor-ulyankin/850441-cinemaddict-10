@@ -1,12 +1,8 @@
-export const getMainContentTemplate = () => {
-  return (
-    `<ul class="sort">
-    <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-    <li><a href="#" class="sort__button">Sort by date</a></li>
-    <li><a href="#" class="sort__button">Sort by rating</a></li>
-  </ul>
+import {createElement} from "../utils";
 
-  <section class="films">
+const getMainContentTemplate = () => {
+  return (
+    `<section class="films">
     <section class="films-list">
       <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
 
@@ -33,3 +29,25 @@ export const getMainContentTemplate = () => {
   </section>`
   );
 };
+
+export default class MainContent {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return getMainContentTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
