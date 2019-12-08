@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import AbstractComponent from './abstract-component.js';
 
 const getMainContentTemplate = (cardQuantity) => {
   let allFilmsContent = `<h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
@@ -36,25 +36,14 @@ const getMainContentTemplate = (cardQuantity) => {
   );
 };
 
-export default class MainContent {
+export default class MainContent extends AbstractComponent {
   constructor(cardQuantity = 0) {
-    this._element = null;
+    super();
+
     this._cardQuantity = cardQuantity;
   }
 
   getTemplate() {
     return getMainContentTemplate(this._cardQuantity);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

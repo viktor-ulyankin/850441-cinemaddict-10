@@ -1,4 +1,4 @@
-import {getRandomIntegerNumber} from '../utils.js';
+import {getRandomIntegerNumber} from '../utils/common.js';
 import {getComments} from './comment.js';
 
 const SEPARATOR_TEXT = `. `;

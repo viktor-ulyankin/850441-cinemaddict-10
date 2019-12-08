@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import AbstractComponent from './abstract-component.js';
 
 export const getUserRankTemplate = (rank) => {
   return (
@@ -9,25 +9,14 @@ export const getUserRankTemplate = (rank) => {
   );
 };
 
-export default class UserRank {
+export default class UserRank extends AbstractComponent {
   constructor(rank = 0) {
-    this._element = null;
+    super();
+
     this._rank = rank;
   }
 
   getTemplate() {
     return getUserRankTemplate(this._rank);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

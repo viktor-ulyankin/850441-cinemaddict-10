@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const getDetailTemplate = (card) => {
   const release = card.releaseDate
@@ -153,9 +153,10 @@ const getDetailTemplate = (card) => {
   );
 };
 
-export default class Detail {
+export default class Detail extends AbstractComponent {
   constructor(card = null) {
-    this._element = null;
+    super();
+
     this._card = card;
   }
 
@@ -163,15 +164,7 @@ export default class Detail {
     return getDetailTemplate(this._card);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setCloseBtnClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
   }
 }

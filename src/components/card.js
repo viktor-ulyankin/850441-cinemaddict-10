@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const getCardTemplate = (card) => {
   const {name, poster, description, releaseDate, rating, runtime, genres, comments} = card;
@@ -26,9 +26,10 @@ const getCardTemplate = (card) => {
   );
 };
 
-export default class Card {
+export default class Card extends AbstractComponent {
   constructor(card = null) {
-    this._element = null;
+    super();
+
     this._card = card;
   }
 
@@ -36,15 +37,11 @@ export default class Card {
     return getCardTemplate(this._card);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
+  setClickHandler(handler) {
+    const cardClickElements = this.getElement().querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`);
+
+    for (let i = 0; i < cardClickElements.length; i++) {
+      cardClickElements[i].addEventListener(`click`, handler);
     }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
