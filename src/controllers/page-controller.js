@@ -3,7 +3,6 @@ import DetailComponent from '../components/detail.js';
 import FilterComponent from '../components/filter.js';
 import MainContentComponent from '../components/main-content.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
-import {render, remove} from '../utils/render.js';
 import {FilmCount, RenderPosition} from '../utils/const.js';
 
 export default class PageController {
@@ -16,31 +15,21 @@ export default class PageController {
     const watchListFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnWatchList ? 1 : 0), 0);
     const historyFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnHistory ? 1 : 0), 0);
     const favoritesFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnFavorites ? 1 : 0), 0);
-    render(this.container, new FilterComponent(watchListFilmsQuantity(), historyFilmsQuantity(), favoritesFilmsQuantity()), RenderPosition.BEFOREEND);
+    const filterComponent = new FilterComponent(watchListFilmsQuantity(), historyFilmsQuantity(), favoritesFilmsQuantity());
+    filterComponent.render(this.container, RenderPosition.BEFOREEND);
 
     // Рендер контейнеров для списков фильмов
-    render(this.container, new MainContentComponent(cards.length), RenderPosition.BEFOREEND);
+    const mainContentComponent = new MainContentComponent(cards.length);
+    mainContentComponent.render(this.container, RenderPosition.BEFOREEND);
 
     // Установка указанного списка фильмов в указаное место
     const setList = (currentCards, targetElement) => currentCards.forEach((card) => {
       const cardElement = new CardComponent(card);
-
-      render(targetElement, cardElement, RenderPosition.BEFOREEND);
+      cardElement.render(targetElement, RenderPosition.BEFOREEND);
 
       cardElement.setClickHandler(() => {
         const detailComponent = new DetailComponent(card);
-
-        render(this.container, detailComponent, RenderPosition.AFTEREND);
-
-        detailComponent.setCloseBtnClickHandler(() => remove(detailComponent));
-
-        document.addEventListener(`keydown`, function (evt) {
-          const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-          if (isEscKey) {
-            remove(detailComponent);
-          }
-        });
+        detailComponent.render(this.container, RenderPosition.AFTEREND);
       });
     });
 
@@ -51,7 +40,7 @@ export default class PageController {
 
     // Рендер кнопки "Show more"
     const showMoreButtonComponent = new ShowMoreButtonComponent();
-    render(filmListContainerElement, showMoreButtonComponent, RenderPosition.AFTEREND);
+    showMoreButtonComponent.render(filmListContainerElement, RenderPosition.AFTEREND);
     showMoreButtonComponent.setClickHandler(() => {
       const prevTasksCount = showingCardsCount;
       showingCardsCount += FilmCount.LIST;
@@ -59,7 +48,7 @@ export default class PageController {
       setList(cards.slice(prevTasksCount, showingCardsCount), filmListContainerElement);
 
       if (showingCardsCount >= cards.length) {
-        remove(showMoreButtonComponent);
+        showMoreButtonComponent.remove();
       }
     });
 

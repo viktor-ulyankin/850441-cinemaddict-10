@@ -1,4 +1,5 @@
-import {createElement} from '../utils/render.js';
+import {createElement} from '../utils/common.js';
+import {RenderPosition} from "../utils/const";
 
 
 export default class AbstractComponent {
@@ -22,7 +23,24 @@ export default class AbstractComponent {
     return this._element;
   }
 
-  removeElement() {
+  remove() {
+    this.getElement().remove();
     this._element = null;
+  }
+
+  render(container, place) {
+    if (container) {
+      switch (place) {
+        case RenderPosition.AFTERBEGIN:
+          container.prepend(this.getElement());
+          break;
+        case RenderPosition.BEFOREEND:
+          container.append(this.getElement());
+          break;
+        case RenderPosition.AFTEREND:
+          container.after(this.getElement());
+          break;
+      }
+    }
   }
 }
