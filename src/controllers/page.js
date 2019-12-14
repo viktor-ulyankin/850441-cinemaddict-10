@@ -1,15 +1,16 @@
-import {SortType} from '../utils/const.js';
-import CardComponent from '../components/card.js';
-import DetailComponent from '../components/detail.js';
+import {SortType, FilmCount, RenderPosition} from '../utils/const.js';
+import {remove} from '../utils/common.js';
 import FilterComponent from '../components/filter.js';
 import SortComponent from '../components/sort.js';
 import MainContentComponent from '../components/main-content.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
-import {FilmCount, RenderPosition} from '../utils/const.js';
+import MovieController from './movie.js';
 
 export default class PageController {
   constructor(container) {
-    this.container = container;
+    this._container = container;
+    this._onViewChange = this._onViewChange.bind(this);
+    this._showedMovieControllers = [];
   }
 
   render(cards) {
@@ -18,36 +19,32 @@ export default class PageController {
     // Рендер фильтра
 
     const watchListFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnWatchList ? 1 : 0), 0);
-    const historyFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnHistory ? 1 : 0), 0);
+    const watchedFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnWatched ? 1 : 0), 0);
     const favoritesFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnFavorites ? 1 : 0), 0);
-    const filterComponent = new FilterComponent(watchListFilmsQuantity(), historyFilmsQuantity(), favoritesFilmsQuantity());
-    filterComponent.render(this.container, RenderPosition.BEFOREEND);
+    const filterComponent = new FilterComponent(watchListFilmsQuantity(), watchedFilmsQuantity(), favoritesFilmsQuantity());
+    filterComponent.render(this._container, RenderPosition.BEFOREEND);
 
 
     // Рендер контейнеров для списков фильмов
 
     const mainContentComponent = new MainContentComponent(cards.length);
-    mainContentComponent.render(this.container, RenderPosition.BEFOREEND);
+    mainContentComponent.render(this._container, RenderPosition.BEFOREEND);
 
 
     // Функция установки указанного списка фильмов в указаное место
 
-    const setList = (currentCards, targetElement) => currentCards.forEach((card) => {
-      const cardElement = new CardComponent(card);
-      cardElement.render(targetElement, RenderPosition.BEFOREEND);
-
-      cardElement.setClickHandler(() => {
-        const detailComponent = new DetailComponent(card);
-        detailComponent.render(this.container, RenderPosition.AFTEREND);
-      });
+    const renderCards = (currentCards, targetElement) => currentCards.forEach((card) => {
+      const movieController = new MovieController(targetElement, this._container, this._onDataChange, this._onViewChange);
+      movieController.render(card);
+      this._showedMovieControllers.push(movieController);
     });
 
 
     // Рендер начального состояния главного списка фильмов
 
     let showingCardsCount = FilmCount.LIST;
-    const filmListContainerElement = this.container.querySelector(`.films-list .films-list__container`);
-    setList(cards.slice(0, showingCardsCount), filmListContainerElement);
+    const filmListContainerElement = this._container.querySelector(`.films-list .films-list__container`);
+    renderCards(cards.slice(0, showingCardsCount), filmListContainerElement);
 
 
     // Рендер сортировки
@@ -55,7 +52,7 @@ export default class PageController {
     let updatedCards = cards;
     const sortComponent = new SortComponent();
     sortComponent.render(filterComponent.getElement(), RenderPosition.AFTEREND);
-    sortComponent.setSortTypeChangeHandler((sortType) => {
+    sortComponent.onChangeSortType((sortType) => {
 
       switch (sortType) {
         case SortType.DATE:
@@ -74,7 +71,7 @@ export default class PageController {
       }
 
       filmListContainerElement.innerHTML = ``;
-      setList(updatedCards.slice(0, showingCardsCount), filmListContainerElement);
+      renderCards(updatedCards.slice(0, showingCardsCount), filmListContainerElement);
     });
 
 
@@ -82,21 +79,21 @@ export default class PageController {
 
     const showMoreButtonComponent = new ShowMoreButtonComponent();
     showMoreButtonComponent.render(filmListContainerElement, RenderPosition.AFTEREND);
-    showMoreButtonComponent.setClickHandler(() => {
+    showMoreButtonComponent.onClick(() => {
       const prevTasksCount = showingCardsCount;
       showingCardsCount += FilmCount.LIST;
 
-      setList(updatedCards.slice(prevTasksCount, showingCardsCount), filmListContainerElement);
+      renderCards(updatedCards.slice(prevTasksCount, showingCardsCount), filmListContainerElement);
 
       if (showingCardsCount >= cards.length) {
-        showMoreButtonComponent.remove();
+        remove(showMoreButtonComponent);
       }
     });
 
 
     // Рендер "Top rated" и "Most commented"
 
-    const [topRatedElements, mostCommentedElements] = this.container.querySelectorAll(`.films-list--extra`);
+    const [topRatedElements, mostCommentedElements] = this._container.querySelectorAll(`.films-list--extra`);
     const topRatedContentElements = topRatedElements.querySelector(`.films-list__container`);
     const mostCommentedContentElements = mostCommentedElements.querySelector(`.films-list__container`);
 
@@ -107,7 +104,7 @@ export default class PageController {
     .filter((card) => card.rating);
 
     if (topRatedCards.length) {
-      setList(topRatedCards.slice(0, FilmCount.EXTRA), topRatedContentElements);
+      renderCards(topRatedCards.slice(0, FilmCount.EXTRA), topRatedContentElements);
     } else {
       topRatedElements.remove();
     }
@@ -119,11 +116,27 @@ export default class PageController {
     .filter((card) => card.comments.length);
 
     if (mostCommentedCards.length) {
-      setList(mostCommentedCards.slice(0, FilmCount.EXTRA), mostCommentedContentElements);
+      renderCards(mostCommentedCards.slice(0, FilmCount.EXTRA), mostCommentedContentElements);
     } else {
       mostCommentedElements.remove();
     }
 
 
   }
+
+
+  // Обновление данных фильма
+
+  _onDataChange(movieController, oldCard, newCard) {
+    movieController.render(newCard);
+  }
+
+
+  // Установка состояния по умолчанию у всех movieController
+
+  _onViewChange() {
+    this._showedMovieControllers.forEach((movieController) => movieController.setDefaultView());
+  }
+
+
 }

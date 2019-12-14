@@ -12,9 +12,31 @@ export default class Card extends AbstractComponent {
     return getCardTemplate(this._card);
   }
 
-  setClickHandler(handler) {
-    this.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, handler);
-    this.getElement().querySelector(`.film-card__title`).addEventListener(`click`, handler);
-    this.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, handler);
+  onClick(handler) {
+    const element = this.getElement();
+    element.querySelector(`.film-card__poster`).addEventListener(`click`, handler);
+    element.querySelector(`.film-card__title`).addEventListener(`click`, handler);
+    element.querySelector(`.film-card__comments`).addEventListener(`click`, handler);
+  }
+
+  onClickWatchList(handler) {
+    this.getElement().querySelector(`.film-card__controls-item--add-to-watchlist`).addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      handler();
+    });
+  }
+
+  onClickWatched(handler) {
+    this.getElement().querySelector(`.film-card__controls-item--mark-as-watched`).addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      handler();
+    });
+  }
+
+  onClickFavorite(handler) {
+    this.getElement().querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      handler();
+    });
   }
 }
