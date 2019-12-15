@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const getRandomIntegerNumber = (min, max) => min + Math.round(max * Math.random());
 
 export const createElement = (template) => {
@@ -26,4 +28,29 @@ export const remove = (component) => {
     component.getElement().remove();
     component.remove();
   }
+};
+
+export const formatFilmReleaseDate = (date) => {
+  return moment(date).format(`DD MMMM YYYY`);
+};
+
+export const formatFilmReleaseYear = (date) => {
+  return moment(date).format(`YYYY`);
+};
+
+export const formatCommentDate = (date) => {
+  const defaultMask = `YYYY/M/D hh:mm`;
+
+  return moment(date).calendar(null, {
+    sameDay: `[Today]`,
+    nextDay: `[Tomorrow]`,
+    nextWeek: defaultMask,
+    lastDay: `[Yesterday]`,
+    lastWeek: defaultMask,
+    sameElse: defaultMask,
+  });
+};
+
+export const getRandomDate = (startDate, endDate) => {
+  return new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
 };

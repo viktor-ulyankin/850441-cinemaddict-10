@@ -1,29 +1,36 @@
-import {getRandomIntegerNumber} from '../utils/common.js';
+import {getRandomIntegerNumber, getRandomDate, formatCommentDate} from '../utils/common.js';
+
+const generateDate = () => {
+  let date = new Date();
+  date.setDate(date.getDate() - 3);
+  date = getRandomDate(date, new Date());
+  return formatCommentDate(date);
+};
 
 const comments = [
   {
     emoji: `./images/emoji/smile.png`,
     text: `Interesting setting and a good cast`,
     author: `Tim Macoveev`,
-    date: `2019/12/31 23:59`,
+    date: generateDate(),
   },
   {
     emoji: `./images/emoji/sleeping.png`,
     text: `Booooooooooring`,
     author: `John Doe`,
-    date: `2 days ago`,
+    date: generateDate(),
   },
   {
     emoji: `./images/emoji/puke.png`,
     text: `Very very old. Meh`,
     author: `John Doe`,
-    date: `2 days ago`,
+    date: generateDate(),
   },
   {
     emoji: `./images/emoji/angry.png`,
     text: `Almost two hours? Seriously?`,
     author: `John Doe`,
-    date: `Today`,
+    date: generateDate(),
   },
 ];
 
