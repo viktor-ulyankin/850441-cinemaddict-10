@@ -1,4 +1,4 @@
-import {getRandomIntegerNumber} from '../utils/common.js';
+import {getRandomIntegerNumber, getRandomDate} from '../utils/common.js';
 import {getComments} from './comment.js';
 
 const SEPARATOR_TEXT = `. `;
@@ -8,8 +8,8 @@ const RuntimeMinute = {
   MAX: 180,
 };
 const Rating = {
-  MIN: 0,
-  MAX: 10,
+  MIN: 1,
+  MAX: 9,
 };
 
 const Names = [
@@ -58,12 +58,7 @@ const generateDescription = () => {
   .join(SEPARATOR_TEXT);
 };
 
-const generateReleaseDate = () => {
-  const start = new Date(FIRST_YEAR_RELEASE, 0, 1);
-  const end = new Date();
-
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-};
+const generateReleaseDate = () => getRandomDate(new Date(FIRST_YEAR_RELEASE, 0, 1), new Date());
 
 const generateRantime = () => {
   const minutes = getRandomIntegerNumber(RuntimeMinute.MIN, RuntimeMinute.MAX);

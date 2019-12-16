@@ -1,8 +1,6 @@
-export const getMovieTemplate = (card) => {
-  const release = card.releaseDate
-  .toDateString()
-  .slice(4);
+import {formatFilmReleaseDate} from '../utils/common.js';
 
+export const getMovieTemplate = (card) => {
   const getGenresTemplate = (genres) => {
     return genres
     .map((genre) => `<span class="film-details__genre">${genre}</span>`)
@@ -123,7 +121,7 @@ export const getMovieTemplate = (card) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${release}</td>
+              <td class="film-details__cell">${formatFilmReleaseDate(card.releaseDate)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
