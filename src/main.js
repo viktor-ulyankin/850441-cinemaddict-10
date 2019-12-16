@@ -10,13 +10,19 @@ const mainElement = document.querySelector(`.main`);
 
 const cards = generateCards(FilmCount.ALL);
 
+
 // Рендер ранга юзера
+
 const userRankComponent = new UserRankComponent(getUserRank());
 userRankComponent.render(headerElement, RenderPosition.BEFOREEND);
 
+
 // Установка числа всех фильмов в футер
+
 footerElement.querySelector(`.footer__statistics p`).textContent = `${cards.length} movies inside`;
 
-// Отправка данных в контроллер
+
+// Отправка данных в контроллеры
+
 const pageController = new PageController(mainElement);
 pageController.render(cards);

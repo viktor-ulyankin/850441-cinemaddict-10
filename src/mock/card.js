@@ -72,10 +72,12 @@ const generateRantime = () => {
 };
 
 const generateGenre = () => {
-  return Genres
+  const genres = Genres
   .slice()
   .filter(() => Math.random() > 0.5)
   .sort(() => (Math.random() - 0.5));
+
+  return genres.length ? genres : [Genres[getRandomIntegerNumber(0, Genres.length - 1)]];
 };
 
 const generateCard = () => {
@@ -89,7 +91,7 @@ const generateCard = () => {
     genres: generateGenre(),
     comments: getComments(),
     isOnWatchList: Math.random() > 0.5,
-    isOnHistory: Math.random() > 0.5,
+    isOnWatched: Math.random() > 0.5,
     isOnFavorites: Math.random() > 0.5,
     director: `Anthony Mann`,
     writers: `Anne Wigton, Heinz Herald, Richard Weil`,
