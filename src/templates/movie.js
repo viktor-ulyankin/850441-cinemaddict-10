@@ -1,6 +1,8 @@
 import {formatFilmReleaseDate} from '../utils/common.js';
 
 export const getMovieTemplate = (card) => {
+  const description = card.description.length > 140 ? card.description.slice(0, 139) + `...` : card.description;
+
   const getGenresTemplate = (genres) => {
     return genres
     .map((genre) => `<span class="film-details__genre">${genre}</span>`)
@@ -140,7 +142,7 @@ export const getMovieTemplate = (card) => {
           </table>
 
           <p class="film-details__film-description">
-            ${card.description}
+            ${description}
           </p>
         </div>
       </div>

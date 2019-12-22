@@ -30,27 +30,10 @@ export const remove = (component) => {
   }
 };
 
-export const formatFilmReleaseDate = (date) => {
-  return moment(date).format(`DD MMMM YYYY`);
-};
+export const formatFilmReleaseDate = (date) => moment(date).format(`DD MMMM YYYY`);
 
-export const formatFilmReleaseYear = (date) => {
-  return moment(date).format(`YYYY`);
-};
+export const formatFilmReleaseYear = (date) => moment(date).format(`YYYY`);
 
-export const formatCommentDate = (date) => {
-  const defaultMask = `YYYY/M/D hh:mm`;
+export const formatCommentDate = (date) => moment(date).format(`YYYY/M/D hh:mm`);
 
-  return moment(date).calendar(null, {
-    sameDay: `[Today]`,
-    nextDay: `[Tomorrow]`,
-    nextWeek: defaultMask,
-    lastDay: `[Yesterday]`,
-    lastWeek: defaultMask,
-    sameElse: defaultMask,
-  });
-};
-
-export const getRandomDate = (startDate, endDate) => {
-  return new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
-};
+export const getRandomDate = (startDate, endDate) => new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));

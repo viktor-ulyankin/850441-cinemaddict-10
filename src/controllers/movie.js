@@ -1,7 +1,9 @@
 import CardComponent from "../components/card.js";
-import {replace, remove} from "../utils/common.js";
+import {getUserName} from "../mock/user.js";
+import {replace, remove, formatCommentDate} from "../utils/common.js";
 import {RenderPosition} from "../utils/const.js";
 import MovieComponent from "../components/movie.js";
+import he from 'he';
 
 export default class MovieController {
   constructor(containerForCard, containerForMovie, onDataChange, onViewChange) {
@@ -31,6 +33,21 @@ export default class MovieController {
       this._onDataChange(this, card, newCard);
     };
 
+    const deleteComment = (numDeletedComment) => {
+      newCard.comments.splice(numDeletedComment, 1);
+      this._onDataChange(this, card, newCard);
+    };
+
+    const addComment = (text, emoji) => {
+      newCard.comments.push({
+        emoji,
+        text: he.encode(text),
+        author: getUserName(),
+        date: formatCommentDate(new Date()),
+      });
+      this._onDataChange(this, card, newCard);
+    };
+
     const oldCardComponent = this._cardComponent;
 
     this._cardComponent = new CardComponent(card);
@@ -46,6 +63,10 @@ export default class MovieController {
       this._movieComponent.onClickWatched = toggleWatched;
 
       this._movieComponent.onClickFavorite = toggleFavorites;
+
+      this._movieComponent.onClickCommentDelete = deleteComment;
+
+      this._movieComponent.onAddComment = addComment;
     });
 
     this._cardComponent.onClickWatchList(toggleWatchList);
@@ -65,5 +86,9 @@ export default class MovieController {
 
   setDefaultView() {
     remove(this._movieComponent);
+  }
+
+  destroy() {
+    remove(this._cardComponent);
   }
 }
