@@ -2,15 +2,22 @@ import AbstractComponent from './abstract-component.js';
 import {getFilterTemplate} from '../templates/filter.js';
 
 export default class Filter extends AbstractComponent {
-  constructor(watchListQuantity = 0, watchedQuantity = 0, favoritesQuantity = 0) {
+  constructor(filters) {
     super();
 
-    this._watchListQuantity = watchListQuantity;
-    this._watchedQuantity = watchedQuantity;
-    this._favoritesQuantity = favoritesQuantity;
+    this._filters = filters;
   }
 
   getTemplate() {
-    return getFilterTemplate(this._watchListQuantity, this._watchedQuantity, this._favoritesQuantity);
+    return getFilterTemplate(this._filters);
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      if (evt.target.classList.contains(`main-navigation__item`)) {
+        const filterName = evt.target.getAttribute(`href`).slice(1);
+        handler(filterName);
+      }
+    });
   }
 }

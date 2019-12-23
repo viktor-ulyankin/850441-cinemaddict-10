@@ -7,6 +7,7 @@ const RuntimeMinute = {
   MIN: 75,
   MAX: 180,
 };
+
 const Rating = {
   MIN: 1,
   MAX: 9,
@@ -75,8 +76,9 @@ const generateGenre = () => {
   return genres.length ? genres : [Genres[getRandomIntegerNumber(0, Genres.length - 1)]];
 };
 
-const generateCard = () => {
+const generateCard = (id) => {
   return {
+    id,
     name: getRandomArrayItem(Names),
     poster: getRandomArrayItem(Posters),
     description: generateDescription(),
@@ -95,10 +97,12 @@ const generateCard = () => {
   };
 };
 
+let counterCard = 0;
+
 const generateCards = (count) => {
   return new Array(count)
   .fill(``)
-  .map(generateCard);
+  .map(() => generateCard(++counterCard));
 };
 
 export {generateCards};

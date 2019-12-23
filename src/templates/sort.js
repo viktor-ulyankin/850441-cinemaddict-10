@@ -1,11 +1,17 @@
 import {SortType} from '../utils/const.js';
 
+const getSortItemsTemplate = () => {
+  return Object.values(SortType).map((sortName, index, currentArray) => {
+    return `<li><a href="#" data-sort-type="${sortName}" class="sort__button${index === currentArray.length - 1 ? ` sort__button--active` : ``}">Sort by ${sortName}</a></li>`;
+  })
+  .reverse()
+  .join(`\n`);
+};
+
 export const getSortTemplate = () => {
   return (
     `<ul class="sort">
-    <li><a href="#" data-sort-type="${SortType.DEFAULT}" class="sort__button sort__button--active">Sort by default</a></li>
-    <li><a href="#" data-sort-type="${SortType.DATE}" class="sort__button">Sort by date</a></li>
-    <li><a href="#" data-sort-type="${SortType.RATING}" class="sort__button">Sort by rating</a></li>
+    ${getSortItemsTemplate()}
   </ul>`
   );
 };
