@@ -9,7 +9,7 @@ export const getFilterTemplate = (filters) => {
 
       return `<a href="#${filter.name}" class="main-navigation__item${filter.isActive ? ` main-navigation__item--active` : ``}">${title}${index ? ` <span class="main-navigation__item-count">${filter.count}</span>` : ``}</a>`;
     })
-    .join(`\n`);
+    .join(`\n`) + `<a href="#stats" class="main-navigation__item main-navigation__item--additional">Stats</a>`;
   };
 
   return (

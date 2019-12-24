@@ -6,18 +6,18 @@ export default class Filter extends AbstractComponent {
     super();
 
     this._filters = filters;
+
+    this.getElement().addEventListener(`click`, (evt) => {
+      if (evt.target.classList.contains(`main-navigation__item`)) {
+        const filterName = evt.target.getAttribute(`href`).slice(1);
+        this.onFilterChange(filterName);
+      }
+    });
   }
 
   getTemplate() {
     return getFilterTemplate(this._filters);
   }
 
-  setFilterChangeHandler(handler) {
-    this.getElement().addEventListener(`click`, (evt) => {
-      if (evt.target.classList.contains(`main-navigation__item`)) {
-        const filterName = evt.target.getAttribute(`href`).slice(1);
-        handler(filterName);
-      }
-    });
-  }
+  onFilterChange() {}
 }

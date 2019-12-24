@@ -1,7 +1,7 @@
-import FilterComponent from '../components/filter.js';
 import {RenderPosition, FilterType} from "../utils/const.js";
 import {replace} from "../utils/common.js";
 import {getCardsByFilter} from "../utils/filter.js";
+import FilterComponent from '../components/filter.js';
 
 export default class FilterController {
   constructor(container, movieModel) {
@@ -27,7 +27,7 @@ export default class FilterController {
     const oldComponent = this._filterComponent;
 
     this._filterComponent = new FilterComponent(filters);
-    this._filterComponent.setFilterChangeHandler(this._onFilterChange);
+    this._filterComponent.onFilterChange = this._onFilterChange;
 
     if (oldComponent) {
       replace(this._filterComponent, oldComponent);
@@ -37,11 +37,17 @@ export default class FilterController {
   }
 
   _onFilterChange(filterType) {
-    this._movieModel.setFilter(filterType);
-    this._activeFilterType = filterType;
+    if (filterType !== `stats`) {
+      this._movieModel.setFilter(filterType);
+      this._activeFilterType = filterType;
+    }
+
+    this.onItemClick(filterType);
   }
 
   _onDataChange() {
     this.render();
   }
+
+  onItemClick() {}
 }

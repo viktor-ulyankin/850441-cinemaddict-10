@@ -37,3 +37,11 @@ export const formatFilmReleaseYear = (date) => moment(date).format(`YYYY`);
 export const formatCommentDate = (date) => moment(date).format(`YYYY/M/D hh:mm`);
 
 export const getRandomDate = (startDate, endDate) => new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
+
+export const getRuntimeByMinutes = (minutes, wordClassContainer) => {
+  if (wordClassContainer) {
+    return `${minutes / 60 ^ 0}<span class="${wordClassContainer}">h</span> ${minutes % 60}<span class="${wordClassContainer}">m</span>`;
+  }
+
+  return `${minutes / 60 ^ 0}h ${minutes % 60}m`;
+};

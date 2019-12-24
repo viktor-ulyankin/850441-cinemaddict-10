@@ -61,12 +61,6 @@ const generateDescription = () => {
 
 const generateReleaseDate = () => getRandomDate(new Date(FIRST_YEAR_RELEASE, 0, 1), new Date());
 
-const generateRantime = () => {
-  const minutes = getRandomIntegerNumber(RuntimeMinute.MIN, RuntimeMinute.MAX);
-
-  return `${minutes / 60 ^ 0}h ${minutes % 60}m`;
-};
-
 const generateGenre = () => {
   const genres = Genres
   .slice()
@@ -84,7 +78,7 @@ const generateCard = (id) => {
     description: generateDescription(),
     releaseDate: generateReleaseDate(),
     rating: getRandomIntegerNumber(Rating.MIN * 10, Rating.MAX * 10) / 10,
-    runtime: generateRantime(),
+    runtime: getRandomIntegerNumber(RuntimeMinute.MIN, RuntimeMinute.MAX),
     genres: generateGenre(),
     comments: getComments(),
     isOnWatchList: Math.random() > 0.5,
