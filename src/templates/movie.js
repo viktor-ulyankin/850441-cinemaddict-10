@@ -1,4 +1,4 @@
-import {formatFilmReleaseDate} from '../utils/common.js';
+import {formatFilmReleaseDate, getRuntimeByMinutes} from '../utils/common.js';
 
 export const getMovieTemplate = (card) => {
   const description = card.description.length > 140 ? card.description.slice(0, 139) + `...` : card.description;
@@ -127,7 +127,7 @@ export const getMovieTemplate = (card) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${card.runtime}</td>
+              <td class="film-details__cell">${getRuntimeByMinutes(card.runtime)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>

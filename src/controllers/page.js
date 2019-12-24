@@ -4,35 +4,37 @@ import SortComponent from '../components/sort.js';
 import MainContentComponent from '../components/main-content.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
 import MovieController from './movie.js';
+import StatisticComponent from "../components/statistic.js";
 
 export default class PageController {
-  constructor(container, movieModel) {
-    this._movieModel = movieModel;
-    this._onChangeFilter = this._onChangeFilter.bind(this);
+  constructor(container, movieModel, userRank) {
     this._container = container;
+    this._movieModel = movieModel;
+    this._userRank = userRank;
+    this._allCards = this._movieModel.getAllItems();
+    this._onChangeFilter = this._onChangeFilter.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
-    this._showedMovieControllers = [];
     this._movieModel.setFilterChangeHandler = this._onChangeFilter;
+    this._sortComponent = new SortComponent();
+    this._mainContentComponent = new MainContentComponent(this._allCards.length);
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
+    this._statisticComponent = new StatisticComponent(this._allCards, this._userRank);
+    this._showedMovieControllers = [];
     this._filmListContainerElement = null;
     this._showingCardsCount = 0;
   }
 
   render() {
-    const allCards = this._movieModel.getAllItems();
-
     // Рендер сортировки
-    const sortComponent = new SortComponent();
-    sortComponent.render(this._container, RenderPosition.BEFOREEND);
-    sortComponent.onChangeSortType((sortType) => {
+    this._sortComponent.render(this._container, RenderPosition.BEFOREEND);
+    this._sortComponent.onChangeSortType((sortType) => {
       this._removeCards();
       this._renderCards(this._getSortedCards(sortType).slice(0, this._showingCardsCount));
     });
 
     // Рендер контейнеров для списков фильмов
-    const mainContentComponent = new MainContentComponent(allCards.length);
-    mainContentComponent.render(this._container, RenderPosition.BEFOREEND);
+    this._mainContentComponent.render(this._container, RenderPosition.BEFOREEND);
     this._filmListContainerElement = this._container.querySelector(`.films-list .films-list__container`);
 
     // Рендер начального состояния главного списка фильмов и кнопки Show more
@@ -42,8 +44,11 @@ export default class PageController {
 
     // Рендер "Top rated" и "Most commented"
     const [topRatedElements, mostCommentedElements] = this._container.querySelectorAll(`.films-list--extra`);
-    this._renderTopRated(topRatedElements, allCards);
-    this._renderMostCommented(mostCommentedElements, allCards);
+    this._renderTopRated(topRatedElements, this._allCards);
+    this._renderMostCommented(mostCommentedElements, this._allCards);
+
+    // Рендер статистики
+    this._statisticComponent.render(this._container, RenderPosition.BEFOREEND);
   }
 
   // Сортировка фильмов
@@ -164,5 +169,17 @@ export default class PageController {
   // Обновление данных после работы с фильтром
   _onChangeFilter() {
     this._updateCards(FilmCount.LIST);
+  }
+
+  toggleStatistic(isShow = false) {
+    if (isShow) {
+      this._sortComponent.hide();
+      this._mainContentComponent.hide();
+      this._statisticComponent.show();
+    } else {
+      this._statisticComponent.hide();
+      this._sortComponent.show();
+      this._mainContentComponent.show();
+    }
   }
 }
