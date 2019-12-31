@@ -7,10 +7,11 @@ import MovieController from './movie.js';
 import StatisticComponent from "../components/statistic.js";
 
 export default class PageController {
-  constructor(container, movieModel, userRank) {
+  constructor(container, movieModel, userRank, api) {
     this._container = container;
     this._movieModel = movieModel;
     this._userRank = userRank;
+    this._api = api;
     this._allCards = this._movieModel.getAllItems();
     this._onChangeFilter = this._onChangeFilter.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
@@ -74,7 +75,7 @@ export default class PageController {
     const element = customTargetElement ? customTargetElement : this._filmListContainerElement;
 
     return currentCards.forEach((card) => {
-      const movieController = new MovieController(element, this._container, this._onDataChange, this._onViewChange);
+      const movieController = new MovieController(element, this._container, this._onDataChange, this._onViewChange, this._api);
       movieController.render(card);
 
       if (!customTargetElement) {
@@ -107,10 +108,10 @@ export default class PageController {
 
     this._showMoreButtonComponent.render(this._filmListContainerElement, RenderPosition.AFTEREND);
     this._showMoreButtonComponent.onClick(() => {
-      const prevTasksCount = this._showingCardsCount;
+      const prevCardsCount = this._showingCardsCount;
       const cards = this._movieModel.getItems();
 
-      this._renderCards(cards.slice(prevTasksCount, this._showingCardsCount + FilmCount.LIST));
+      this._renderCards(cards.slice(prevCardsCount, this._showingCardsCount + FilmCount.LIST));
       this._showingCardsCount += FilmCount.LIST;
 
       if (this._showingCardsCount >= cards.length) {
@@ -153,12 +154,15 @@ export default class PageController {
 
   // Обновление данных фильма
   _onDataChange(movieController, oldCard, newCard) {
+    this._api.updateCard(oldCard.id, newCard)
+    .then((cardModel) => {
+      const isSuccess = this._movieModel.updateItem(oldCard.id, cardModel);
 
-    const isSuccess = this._movieModel.updateItem(oldCard.id, newCard);
-
-    if (isSuccess) {
-      movieController.render(newCard);
-    }
+      if (isSuccess) {
+        movieController.render(cardModel);
+        this._updateCards(this._showingCardsCount);
+      }
+    });
   }
 
   // Установка состояния по умолчанию у всех movieController

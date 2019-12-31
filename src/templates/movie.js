@@ -1,32 +1,12 @@
 import {formatFilmReleaseDate, getRuntimeByMinutes} from '../utils/common.js';
 
+
 export const getMovieTemplate = (card) => {
   const description = card.description.length > 140 ? card.description.slice(0, 139) + `...` : card.description;
 
   const getGenresTemplate = (genres) => {
     return genres
     .map((genre) => `<span class="film-details__genre">${genre}</span>`)
-    .join(`\n`);
-  };
-
-  const getCommentsTemplate = (comments) => {
-    return comments
-    .map((comment) => {
-      return (`<li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="${comment.emoji}" width="55" height="55" alt="emoji">
-            </span>
-            <div>
-              <p class="film-details__comment-text">${comment.text}</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${comment.author}</span>
-                <span class="film-details__comment-day">${comment.date}</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>`
-      );
-    })
     .join(`\n`);
   };
 
@@ -100,7 +80,7 @@ export const getMovieTemplate = (card) => {
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
               <h3 class="film-details__title">${card.name}</h3>
-              <p class="film-details__title-original">Original: ${card.name}</p>
+              <p class="film-details__title-original">Original: ${card.name2}</p>
             </div>
 
             <div class="film-details__rating">
@@ -115,11 +95,11 @@ export const getMovieTemplate = (card) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${card.writers}</td>
+              <td class="film-details__cell">${card.writers.join(`, `)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${card.actors}</td>
+              <td class="film-details__cell">${card.actors.join(`, `)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
@@ -160,46 +140,6 @@ export const getMovieTemplate = (card) => {
     </div>
     
     ${card.isOnWatched ? getRatingFormTemplate() : ``}
-
-    <div class="form-details__bottom-container">
-      <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${card.comments.length}</span></h3>
-
-        <ul class="film-details__comments-list">
-          ${getCommentsTemplate(card.comments)}
-        </ul>
-
-        <div class="film-details__new-comment">
-          <div for="add-emoji" class="film-details__add-emoji-label"></div>
-
-          <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-          </label>
-
-          <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="sleeping">
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="neutral-face">
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-gpuke" value="grinning">
-            <label class="film-details__emoji-label" for="emoji-gpuke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="grinning">
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
-          </div>
-        </div>
-      </section>
-    </div>
   </form>
 </section>`
   );
