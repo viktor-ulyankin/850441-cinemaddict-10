@@ -1,4 +1,5 @@
 import CardModel from './models/card.js';
+import CommentsModel from './models/comments.js';
 
 const Method = {
   GET: `GET`,
@@ -27,7 +28,19 @@ export default class API {
     .then(CardModel.parseCards);
   }
 
-  createCard(card) {}
+  createComment(movieId, comment) {
+    return this._load({
+      url: `comments/${movieId}_`,
+      method: Method.POST,
+      body: JSON.stringify(comment.toRAW()),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+    .then((response) => response.json())
+    .then((response) => ({
+      movie: CardModel.parseCard(response.movie),
+      comments: CommentsModel.parseComments(response.comments),
+    }));
+  }
 
   updateCard(id, data) {
     return this._load({
@@ -40,11 +53,14 @@ export default class API {
     .then(CardModel.parseCard);
   }
 
-  deleteCard(id) {}
+  deleteComment(id) {
+    return this._load({url: `comments/${id}`, method: Method.DELETE});
+  }
 
   getComments(movieID) {
     return this._load({url: `comments/${movieID}`})
     .then((response) => response.json())
+    .then(CommentsModel.parseComments);
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

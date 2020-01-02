@@ -21,3 +21,10 @@ export const FilterType = {
   HISTORY: `history`,
   FAVORITES: `favorites`,
 };
+
+export const Emotion = new Set([
+  `smile`,
+  `sleeping`,
+  `puke`,
+  `angry`,
+]);
