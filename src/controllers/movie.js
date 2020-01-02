@@ -1,9 +1,10 @@
 import CardComponent from "../components/card.js";
-import {replace, remove, formatCommentDate} from "../utils/common.js";
+import {replace, remove} from "../utils/common.js";
 import {RenderPosition} from "../utils/const.js";
 import MovieComponent from "../components/movie.js";
 import CommentsComponent from "../components/comments.js";
 import CardModel from '../models/card.js';
+import CommentsModel from '../models/comments.js';
 import he from 'he';
 
 export default class MovieController {
@@ -41,22 +42,27 @@ export default class MovieController {
     };
 
     const deleteComment = (numDeletedComment) => {
-      const newCard = CardModel.clone(card);
+      this._api.deleteComment(card.comments[numDeletedComment])
+      .then(() => {
+        const newCard = CardModel.clone(card);
 
-      newCard.comments.splice(numDeletedComment, 1);
-      this._onDataChange(this, card, newCard);
+        newCard.comments.splice(numDeletedComment, 1);
+        this._onDataChange(this, card, newCard);
+      });
     };
 
-    const addComment = (text, emoji) => {
-      const newCard = CardModel.clone(card);
-
-      newCard.comments.push({
-        emoji,
-        text: he.encode(text),
+    const addComment = (comment, emotion) => {
+      const newComment = new CommentsModel({
         author: `Viktor`,
-        date: formatCommentDate(new Date()),
+        emotion,
+        comment: he.encode(comment),
+        date: new Date(),
       });
-      this._onDataChange(this, card, newCard);
+
+      return this._api.createComment(card.id, newComment)
+      .then((response) => {
+        this._onDataChange(this, card, response.movie);
+      });
     };
 
     const oldCardComponent = this._cardComponent;
@@ -75,8 +81,8 @@ export default class MovieController {
 
       this._api.getComments(card.id)
       .then((comments) => {
-        this._commentComponent = new CommentsComponent(comments);
-        this._commentComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND);
+        this._commentComponent = new CommentsComponent();
+        this._commentComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND, comments);
         this._commentComponent.onClickCommentDelete = deleteComment;
         this._commentComponent.onAddComment = addComment;
       });
@@ -95,6 +101,13 @@ export default class MovieController {
     if (oldMovieComponent) {
       replace(this._movieComponent, oldMovieComponent);
       this._movieComponent.render(this._containerForMovie, RenderPosition.AFTEREND, card);
+    }
+
+    if (this._commentComponent) {
+      this._api.getComments(card.id)
+      .then((comments) => {
+        this._commentComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND, comments);
+      });
     }
   }
 

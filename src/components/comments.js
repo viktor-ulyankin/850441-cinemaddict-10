@@ -1,17 +1,27 @@
-import AbstractSmartComponent from './abstract-smart-component.js';
+import AbstractComponent from './abstract-component.js';
 import {getCommentsTemplate} from '../templates/comments.js';
 
-export default class Comments extends AbstractSmartComponent {
-  constructor(comments = []) {
+export default class Comments extends AbstractComponent {
+  constructor() {
     super();
 
-    this._comments = comments;
+    this._comments = null;
     this._onCmdEnterKeyDown = this._onCmdEnterKeyDown.bind(this);
     this.onClickCommentDelete = this.onClickCommentDelete.bind(this);
     this.onAddComment = this.onAddComment.bind(this);
     this._emojiSelected = null;
+    this.isSending = false;
+  }
 
+  render(container, place, comments = []) {
+    this._emojiSelected = null;
+    this._comments = comments;
+    this.isSending = false;
+
+    this.remove();
     this._subscribeOnEvents();
+
+    super.render(container, place);
   }
 
   getTemplate() {
@@ -19,7 +29,8 @@ export default class Comments extends AbstractSmartComponent {
   }
 
   _onCmdEnterKeyDown(evt) {
-    if (evt.key === `Enter` && (evt.ctrlKey || evt.metaKey)) {
+    if (evt.key === `Enter` && (evt.ctrlKey || evt.metaKey) && !this.isSending) {
+      this.isSending = true;
       this._addComment();
     }
   }
@@ -28,8 +39,26 @@ export default class Comments extends AbstractSmartComponent {
     const textElement = this.getElement().querySelector(`.film-details__comment-input`);
 
     if (textElement.value.length && this._emojiSelected) {
-      this.onAddComment(textElement.value, this._emojiSelected);
-      this.rerender();
+      this._toggleErrorStateForm(false);
+
+      this.onAddComment(textElement.value, this._emojiSelected)
+      .then(() => {
+        this._toggleErrorStateForm(false);
+      }).catch(() => {
+        this._toggleErrorStateForm(true);
+        this.isSending = false;
+      });
+    }
+  }
+
+  _toggleErrorStateForm(isError = false) {
+    const elementFormAdd = this.getElement().querySelector(`.film-details__new-comment`);
+    const classError = `film-details__new-comment_error`;
+
+    if (isError) {
+      elementFormAdd.classList.add(classError);
+    } else {
+      elementFormAdd.classList.remove(classError);
     }
   }
 
@@ -40,7 +69,6 @@ export default class Comments extends AbstractSmartComponent {
       linkElement.addEventListener(`click`, (e) => {
         e.preventDefault();
         this.onClickCommentDelete(index);
-        this.rerender();
       });
     });
 
@@ -54,7 +82,7 @@ export default class Comments extends AbstractSmartComponent {
         targetElement.innerHTML = ``;
         targetElement.appendChild(cloneImgElement);
 
-        this._emojiSelected = this.getElement().querySelector(`.film-details__emoji-label[for=${evt.target.id}] img`).getAttribute(`src`);
+        this._emojiSelected = evt.target.value;
       }
     });
   }
@@ -62,14 +90,4 @@ export default class Comments extends AbstractSmartComponent {
   onClickCommentDelete() {}
 
   onAddComment() {}
-
-  recoveryListeners() {
-    this._subscribeOnEvents();
-  }
-
-  rerender() {
-    super.rerender();
-
-    this._emojiSelected = null;
-  }
 }

@@ -1,4 +1,5 @@
-import {formatCommentDate} from "../utils/common";
+import {formatCommentDate} from "../utils/common.js";
+import {Emotion} from "../utils/const.js";
 
 export const getCommentsTemplate = (comments) => {
   return (
@@ -18,28 +19,39 @@ export const getCommentsTemplate = (comments) => {
           </label>
 
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="sleeping">
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="neutral-face">
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-gpuke" value="grinning">
-            <label class="film-details__emoji-label" for="emoji-gpuke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="grinning">
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
+            ${getEmotionList()}
           </div>
         </div>
       </section>
+      <style>
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+    
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+          transform: translateX(-5px);
+        }
+    
+        20%,
+        40%,
+        60%,
+        80% {
+          transform: translateX(5px);
+        }
+      }
+      .film-details__new-comment_error {
+        animation: shake 0.6s;
+      }
+      .film-details__new-comment_error .film-details__comment-input {
+        border: 1px solid red;
+      }
+    </style>
     </div>`
   );
 };
@@ -63,4 +75,17 @@ const getItemsTemplate = (comments) => {
     );
   })
   .join(`\n`);
+};
+
+const getEmotionList = () => {
+  let template = ``;
+
+  Emotion.forEach((emotion) => {
+    template += `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emotion}" value="${emotion}">
+            <label class="film-details__emoji-label" for="emoji-${emotion}">
+              <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji">
+            </label>`;
+  });
+
+  return template;
 };
