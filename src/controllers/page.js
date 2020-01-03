@@ -13,10 +13,10 @@ export default class PageController {
     this._userRank = userRank;
     this._api = api;
     this._allCards = this._movieModel.getAllItems();
-    this._onChangeFilter = this._onChangeFilter.bind(this);
+    this._onFilterChange = this._onFilterChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
-    this._movieModel.setFilterChangeHandler = this._onChangeFilter;
+    this._movieModel.onFilterChange = this._onFilterChange;
     this._sortComponent = new SortComponent();
     this._mainContentComponent = new MainContentComponent(this._allCards.length);
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
@@ -171,7 +171,7 @@ export default class PageController {
   }
 
   // Обновление данных после работы с фильтром
-  _onChangeFilter() {
+  _onFilterChange() {
     this._updateCards(FilmCount.LIST);
   }
 

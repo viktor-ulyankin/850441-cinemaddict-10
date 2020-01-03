@@ -43,26 +43,22 @@ export default class Movie extends AbstractComponent {
       if (evt.target.classList.contains(`film-details__control-input`)) {
         switch (evt.target.id) {
           case `watchlist`:
-            this.onClickWatchList(evt.target.checked);
+            this.onWatchListClick(evt.target.checked);
             break;
           case `watched`:
-            this.onClickWatched(evt.target.checked);
+            this.onWatchedClick(evt.target.checked);
             break;
           case `favorite`:
-            this.onClickFavorite(evt.target.checked);
+            this.onFavoriteClick(evt.target.checked);
             break;
         }
       }
     });
   }
 
-  onClickWatchList() {}
+  onWatchListClick() {}
 
-  onClickWatched() {}
+  onWatchedClick() {}
 
-  onClickFavorite() {}
-
-  recoveryListeners() {
-    this._subscribeOnEvents();
-  }
+  onFavoriteClick() {}
 }

@@ -19,21 +19,21 @@ export default class Card extends AbstractComponent {
     element.querySelector(`.film-card__comments`).addEventListener(`click`, handler);
   }
 
-  onClickWatchList(handler) {
+  onWatchListClick(handler) {
     this.getElement().querySelector(`.film-card__controls-item--add-to-watchlist`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
       handler();
     });
   }
 
-  onClickWatched(handler) {
+  onWatchedClick(handler) {
     this.getElement().querySelector(`.film-card__controls-item--mark-as-watched`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
       handler();
     });
   }
 
-  onClickFavorite(handler) {
+  onFavoriteClick(handler) {
     this.getElement().querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
       handler();

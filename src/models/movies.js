@@ -28,17 +28,17 @@ export default class Movie {
 
     this._cards = [].concat(this._cards.slice(0, index), card, this._cards.slice(index + 1));
 
-    this.setDataChangeHandler();
+    this.onDataChange();
 
     return true;
   }
 
   setFilter(filterType) {
     this._activeFilterType = filterType;
-    this.setFilterChangeHandler();
+    this.onFilterChange();
   }
 
-  setFilterChangeHandler() {}
+  onFilterChange() {}
 
-  setDataChangeHandler() {}
+  onDataChange() {}
 }

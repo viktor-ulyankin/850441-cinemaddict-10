@@ -10,7 +10,7 @@ export default class Filter extends AbstractComponent {
     this.getElement().addEventListener(`click`, (evt) => {
       if (evt.target.classList.contains(`main-navigation__item`)) {
         const filterName = evt.target.getAttribute(`href`).slice(1);
-        this.onFilterChange(filterName);
+        this.onChange(filterName);
       }
     });
   }
@@ -19,5 +19,5 @@ export default class Filter extends AbstractComponent {
     return getFilterTemplate(this._filters);
   }
 
-  onFilterChange() {}
+  onChange() {}
 }
