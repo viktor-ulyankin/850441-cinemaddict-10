@@ -7,8 +7,8 @@ export default class Comments extends AbstractComponent {
 
     this._comments = null;
     this._onCmdEnterKeyDown = this._onCmdEnterKeyDown.bind(this);
-    this.onClickCommentDelete = this.onClickCommentDelete.bind(this);
-    this.onAddComment = this.onAddComment.bind(this);
+    this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.onAdd = this.onAdd.bind(this);
     this._emojiSelected = null;
     this.isSending = false;
   }
@@ -31,17 +31,17 @@ export default class Comments extends AbstractComponent {
   _onCmdEnterKeyDown(evt) {
     if (evt.key === `Enter` && (evt.ctrlKey || evt.metaKey) && !this.isSending) {
       this.isSending = true;
-      this._addComment();
+      this._add();
     }
   }
 
-  _addComment() {
+  _add() {
     const textElement = this.getElement().querySelector(`.film-details__comment-input`);
 
     if (textElement.value.length && this._emojiSelected) {
       this._toggleErrorStateForm(false);
 
-      this.onAddComment(textElement.value, this._emojiSelected)
+      this.onAdd(textElement.value, this._emojiSelected)
       .then(() => {
         this._toggleErrorStateForm(false);
       }).catch(() => {
@@ -68,7 +68,7 @@ export default class Comments extends AbstractComponent {
     linkToCommentDeleteElement.forEach((linkElement, index) => {
       linkElement.addEventListener(`click`, (e) => {
         e.preventDefault();
-        this.onClickCommentDelete(index);
+        this.onDeleteClick(index);
       });
     });
 
@@ -87,7 +87,7 @@ export default class Comments extends AbstractComponent {
     });
   }
 
-  onClickCommentDelete() {}
+  onDeleteClick() {}
 
-  onAddComment() {}
+  onAdd() {}
 }

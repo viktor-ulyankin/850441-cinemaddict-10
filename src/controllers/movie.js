@@ -75,22 +75,22 @@ export default class MovieController {
 
       this._movieComponent = new MovieComponent();
       this._movieComponent.render(this._containerForMovie, RenderPosition.AFTEREND, card);
-      this._movieComponent.onClickWatchList = toggleWatchList;
-      this._movieComponent.onClickWatched = toggleWatched;
-      this._movieComponent.onClickFavorite = toggleFavorites;
+      this._movieComponent.onWatchListClick = toggleWatchList;
+      this._movieComponent.onWatchedClick = toggleWatched;
+      this._movieComponent.onFavoriteClick = toggleFavorites;
 
       this._api.getComments(card.id)
       .then((comments) => {
         this._commentComponent = new CommentsComponent();
         this._commentComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND, comments);
-        this._commentComponent.onClickCommentDelete = deleteComment;
-        this._commentComponent.onAddComment = addComment;
+        this._commentComponent.onDeleteClick = deleteComment;
+        this._commentComponent.onAdd = addComment;
       });
     });
 
-    this._cardComponent.onClickWatchList(toggleWatchList);
-    this._cardComponent.onClickWatched(toggleWatched);
-    this._cardComponent.onClickFavorite(toggleFavorites);
+    this._cardComponent.onWatchListClick(toggleWatchList);
+    this._cardComponent.onWatchedClick(toggleWatched);
+    this._cardComponent.onFavoriteClick(toggleFavorites);
 
     if (oldCardComponent) {
       replace(this._cardComponent, oldCardComponent);
@@ -107,6 +107,8 @@ export default class MovieController {
       this._api.getComments(card.id)
       .then((comments) => {
         this._commentComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND, comments);
+        this._commentComponent.onDeleteClick = deleteComment;
+        this._commentComponent.onAdd = addComment;
       });
     }
   }
