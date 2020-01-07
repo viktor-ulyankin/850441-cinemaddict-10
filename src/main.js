@@ -31,8 +31,8 @@ api.getCards()
   footerElement.querySelector(`.footer__statistics p`).textContent = `${cards.length} movies inside`;
 
   // Рендер контроллера фильтра
+  filterController.onItemClick((itemName) => pageController.toggleStatistic(itemName === `stats`));
   filterController.render();
-  filterController.onItemClick = (itemName) => pageController.toggleStatistic(itemName === `stats`);
 
   // Рендер основного контроллера страницы
   pageController.render();

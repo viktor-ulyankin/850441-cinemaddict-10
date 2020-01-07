@@ -6,17 +6,14 @@ export default class Comments extends AbstractComponent {
     super();
 
     this._comments = null;
-    this._onCmdEnterKeyDown = this._onCmdEnterKeyDown.bind(this);
-    this.onDeleteClick = this.onDeleteClick.bind(this);
-    this.onAdd = this.onAdd.bind(this);
     this._emojiSelected = null;
-    this.isSending = false;
+    this._isSending = false;
   }
 
   render(container, place, comments = []) {
     this._emojiSelected = null;
     this._comments = comments;
-    this.isSending = false;
+    this._isSending = false;
 
     this.remove();
     this._subscribeOnEvents();
@@ -26,29 +23,6 @@ export default class Comments extends AbstractComponent {
 
   getTemplate() {
     return getCommentsTemplate(this._comments);
-  }
-
-  _onCmdEnterKeyDown(evt) {
-    if (evt.key === `Enter` && (evt.ctrlKey || evt.metaKey) && !this.isSending) {
-      this.isSending = true;
-      this._add();
-    }
-  }
-
-  _add() {
-    const textElement = this.getElement().querySelector(`.film-details__comment-input`);
-
-    if (textElement.value.length && this._emojiSelected) {
-      this._toggleErrorStateForm(false);
-
-      this.onAdd(textElement.value, this._emojiSelected)
-      .then(() => {
-        this._toggleErrorStateForm(false);
-      }).catch(() => {
-        this._toggleErrorStateForm(true);
-        this.isSending = false;
-      });
-    }
   }
 
   _toggleErrorStateForm(isError = false) {
@@ -62,18 +36,41 @@ export default class Comments extends AbstractComponent {
     }
   }
 
-  _subscribeOnEvents() {
-    const linkToCommentDeleteElement = this.getElement().querySelectorAll(`.film-details__comment-delete`);
-
-    linkToCommentDeleteElement.forEach((linkElement, index) => {
+  onDeleteClick(handler) {
+    this.getElement().querySelectorAll(`.film-details__comment-delete`).forEach((linkElement, index) => {
       linkElement.addEventListener(`click`, (e) => {
         e.preventDefault();
-        this.onDeleteClick(index);
+        handler(index);
       });
     });
+  }
 
-    document.addEventListener(`keydown`, this._onCmdEnterKeyDown);
+  onEnter(handler) {
+    document.addEventListener(`keydown`, (evt) => {
+      if (evt.key === `Enter` && (evt.ctrlKey || evt.metaKey) && !this._isSending) {
+        const textElement = this.getElement().querySelector(`.film-details__comment-input`);
 
+        this._isSending = true;
+
+        if (textElement.value.length && this._emojiSelected) {
+          this._toggleErrorStateForm(false);
+
+          handler(textElement.value, this._emojiSelected)
+          .then(() => {
+            this._toggleErrorStateForm(false);
+          }).catch(() => {
+            this._toggleErrorStateForm(true);
+            this._isSending = false;
+          });
+        } else {
+          this._toggleErrorStateForm(true);
+          this._isSending = false;
+        }
+      }
+    });
+  }
+
+  _subscribeOnEvents() {
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`change`, (evt) => {
       if (evt.target.classList.contains(`film-details__emoji-item`) && evt.target.checked) {
         const cloneImgElement = evt.target.nextElementSibling.querySelector(`img`).cloneNode();
@@ -86,8 +83,4 @@ export default class Comments extends AbstractComponent {
       }
     });
   }
-
-  onDeleteClick() {}
-
-  onAdd() {}
 }

@@ -45,10 +45,14 @@ export default class AbstractComponent {
   }
 
   show() {
-    this._element.classList.remove(this._classHidden);
+    if (this._element) {
+      this._element.classList.remove(this._classHidden);
+    }
   }
 
   hide() {
-    this._element.classList.add(this._classHidden);
+    if (this._element) {
+      this._element.classList.add(this._classHidden);
+    }
   }
 }

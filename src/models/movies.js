@@ -5,6 +5,8 @@ export default class Movie {
   constructor() {
     this._cards = [];
     this._activeFilterType = FilterType.ALL;
+    this._onFilterChangeHandler = null;
+    this._onDataChangeHandler = null;
   }
 
   getItems() {
@@ -28,17 +30,21 @@ export default class Movie {
 
     this._cards = [].concat(this._cards.slice(0, index), card, this._cards.slice(index + 1));
 
-    this.onDataChange();
+    this._onDataChangeHandler();
 
     return true;
   }
 
   setFilter(filterType) {
     this._activeFilterType = filterType;
-    this.onFilterChange();
+    this._onFilterChangeHandler();
   }
 
-  onFilterChange() {}
+  onFilterChange(handler) {
+    this._onFilterChangeHandler = handler;
+  }
 
-  onDataChange() {}
+  onDataChange(handler) {
+    this._onDataChangeHandler = handler;
+  }
 }

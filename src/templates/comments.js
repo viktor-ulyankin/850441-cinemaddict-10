@@ -23,35 +23,6 @@ export const getCommentsTemplate = (comments) => {
           </div>
         </div>
       </section>
-      <style>
-      @keyframes shake {
-        0%,
-        100% {
-          transform: translateX(0);
-        }
-    
-        10%,
-        30%,
-        50%,
-        70%,
-        90% {
-          transform: translateX(-5px);
-        }
-    
-        20%,
-        40%,
-        60%,
-        80% {
-          transform: translateX(5px);
-        }
-      }
-      .film-details__new-comment_error {
-        animation: shake 0.6s;
-      }
-      .film-details__new-comment_error .film-details__comment-input {
-        border: 1px solid red;
-      }
-    </style>
     </div>`
   );
 };

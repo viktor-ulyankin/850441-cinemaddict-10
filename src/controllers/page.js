@@ -16,7 +16,7 @@ export default class PageController {
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
-    this._movieModel.onFilterChange = this._onFilterChange;
+    this._movieModel.onFilterChange(this._onFilterChange);
     this._sortComponent = new SortComponent();
     this._mainContentComponent = new MainContentComponent(this._allCards.length);
     this._showMoreButtonComponent = new ShowMoreButtonComponent();

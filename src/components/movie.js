@@ -8,6 +8,9 @@ export default class Movie extends AbstractComponent {
 
     this._card = null;
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._onWatchListClickHandler = null;
+    this._onWatchedClickHandler = null;
+    this._onFavoriteClickHandler = null;
   }
 
   render(container, place, card) {
@@ -43,22 +46,28 @@ export default class Movie extends AbstractComponent {
       if (evt.target.classList.contains(`film-details__control-input`)) {
         switch (evt.target.id) {
           case `watchlist`:
-            this.onWatchListClick(evt.target.checked);
+            this._onWatchListClickHandler(evt.target.checked);
             break;
           case `watched`:
-            this.onWatchedClick(evt.target.checked);
+            this._onWatchedClickHandler(evt.target.checked);
             break;
           case `favorite`:
-            this.onFavoriteClick(evt.target.checked);
+            this._onFavoriteClickHandler(evt.target.checked);
             break;
         }
       }
     });
   }
 
-  onWatchListClick() {}
+  onWatchListClick(handler) {
+    this._onWatchListClickHandler = handler;
+  }
 
-  onWatchedClick() {}
+  onWatchedClick(handler) {
+    this._onWatchedClickHandler = handler;
+  }
 
-  onFavoriteClick() {}
+  onFavoriteClick(handler) {
+    this._onFavoriteClickHandler = handler;
+  }
 }

@@ -3,6 +3,7 @@ import {replace, remove} from "../utils/common.js";
 import {RenderPosition} from "../utils/const.js";
 import MovieComponent from "../components/movie.js";
 import CommentsComponent from "../components/comments.js";
+import RatingFormComponent from "../components/rating-form.js";
 import CardModel from '../models/card.js';
 import CommentsModel from '../models/comments.js';
 import he from 'he';
@@ -17,6 +18,7 @@ export default class MovieController {
     this._cardComponent = null;
     this._movieComponent = null;
     this._commentComponent = null;
+    this._ratingFormComponent = null;
   }
 
   render(card) {
@@ -65,6 +67,13 @@ export default class MovieController {
       });
     };
 
+    const setRating = (rating) => {
+      return this._api.setRating(card.id, rating)
+      .then((response) => {
+        this._onDataChange(this, card, response.movie);
+      });
+    };
+
     const oldCardComponent = this._cardComponent;
     const oldMovieComponent = this._movieComponent;
 
@@ -74,17 +83,27 @@ export default class MovieController {
       this._onViewChange();
 
       this._movieComponent = new MovieComponent();
+      this._movieComponent.onWatchListClick(toggleWatchList);
+      this._movieComponent.onWatchedClick(toggleWatched);
+      this._movieComponent.onFavoriteClick(toggleFavorites);
       this._movieComponent.render(this._containerForMovie, RenderPosition.AFTEREND, card);
-      this._movieComponent.onWatchListClick = toggleWatchList;
-      this._movieComponent.onWatchedClick = toggleWatched;
-      this._movieComponent.onFavoriteClick = toggleFavorites;
+
+      this._ratingFormComponent = new RatingFormComponent(card);
+      this._ratingFormComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND);
+      this._ratingFormComponent.onRatingClick(setRating);
+
+      if (card.isOnWatched) {
+        this._ratingFormComponent.show();
+      } else {
+        this._ratingFormComponent.hide();
+      }
 
       this._api.getComments(card.id)
       .then((comments) => {
         this._commentComponent = new CommentsComponent();
         this._commentComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND, comments);
-        this._commentComponent.onDeleteClick = deleteComment;
-        this._commentComponent.onAdd = addComment;
+        this._commentComponent.onDeleteClick(deleteComment);
+        this._commentComponent.onEnter(addComment);
       });
     });
 
@@ -107,8 +126,8 @@ export default class MovieController {
       this._api.getComments(card.id)
       .then((comments) => {
         this._commentComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND, comments);
-        this._commentComponent.onDeleteClick = deleteComment;
-        this._commentComponent.onAdd = addComment;
+        this._commentComponent.onDeleteClick(deleteComment);
+        this._commentComponent.onEnter(addComment);
       });
     }
   }
