@@ -31,9 +31,7 @@ export const formatFilmReleaseDate = (date) => moment(date).format(`DD MMMM YYYY
 
 export const formatFilmReleaseYear = (date) => moment(date).format(`YYYY`);
 
-export const formatCommentDate = (date) => moment(date).format(`YYYY/M/D hh:mm`);
-
-export const getRandomDate = (startDate, endDate) => new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
+export const formatCommentDate = (date) => moment(date).format(`YYYY/MM/DD HH:MM`);
 
 export const getRuntimeByMinutes = (minutes, wordClassContainer) => {
   if (wordClassContainer) {
@@ -41,4 +39,17 @@ export const getRuntimeByMinutes = (minutes, wordClassContainer) => {
   }
 
   return `${minutes / 60 ^ 0}h ${minutes % 60}m`;
+};
+
+export const getUserRank = (quantity) => {
+  switch (true) {
+    case (quantity >= 1 && quantity <= 10):
+      return `novice`;
+    case (quantity >= 11 && quantity <= 20):
+      return `fan`;
+    case (quantity >= 21):
+      return `movie buff`;
+  }
+
+  return ``;
 };

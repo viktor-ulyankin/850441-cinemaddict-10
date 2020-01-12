@@ -21,7 +21,8 @@ export default class PageController {
     this._mainContentComponent = new MainContentComponent(this._allCards.length);
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
     this._statisticComponent = new StatisticComponent(this._allCards, this._userRank);
-    this._showedMovieControllers = [];
+    this._showedAllMovieControllers = [];
+    this._showedMainMovieControllers = [];
     this._filmListContainerElement = null;
     this._showingCardsCount = 0;
   }
@@ -42,14 +43,17 @@ export default class PageController {
     this._renderCards(this._movieModel.getItems().slice(0, FilmCount.LIST));
     this._showingCardsCount = FilmCount.LIST;
     this._renderShowMoreButton();
-
-    // Рендер "Top rated" и "Most commented"
-    const [topRatedElements, mostCommentedElements] = this._container.querySelectorAll(`.films-list--extra`);
-    this._renderTopRated(topRatedElements, this._allCards);
-    this._renderMostCommented(mostCommentedElements, this._allCards);
+    this._renderExtraList();
 
     // Рендер статистики
     this._statisticComponent.render(this._container, RenderPosition.BEFOREEND);
+  }
+
+  // Рендер "Top rated" и "Most commented"
+  _renderExtraList() {
+    const [topRatedElements, mostCommentedElements] = this._container.querySelectorAll(`.films-list--extra`);
+    this._renderTopRated(topRatedElements, this._allCards);
+    this._renderMostCommented(mostCommentedElements, this._allCards);
   }
 
   // Сортировка фильмов
@@ -79,8 +83,14 @@ export default class PageController {
       movieController.render(card);
 
       if (!customTargetElement) {
-        this._showedMovieControllers.push(movieController);
+        this._showedMainMovieControllers.push(movieController);
       }
+
+      if (!this._showedAllMovieControllers[card.id]) {
+        this._showedAllMovieControllers[card.id] = [];
+      }
+
+      this._showedAllMovieControllers[card.id].push(movieController);
     });
   }
 
@@ -94,8 +104,8 @@ export default class PageController {
 
   // Удаление фильмов из главного списка
   _removeCards() {
-    this._showedMovieControllers.forEach((movieController) => movieController.destroy());
-    this._showedMovieControllers = [];
+    this._showedMainMovieControllers.forEach((movieController) => movieController.destroy());
+    this._showedMainMovieControllers = [];
   }
 
   // Перерендеревание кнопки Show More
@@ -123,13 +133,15 @@ export default class PageController {
   // Рендер самых популярных фильмов
   _renderTopRated(container, allCards) {
     const contentElements = container.querySelector(`.films-list__container`);
+    const uniqueRating = [...new Set(allCards.map((card) => card.rating))];
     const cards = allCards
     .slice()
-    .sort((prev, next) => next.rating - prev.rating)
-    .slice(0, 2)
-    .filter((card) => card.rating);
+    .filter((card) => card.rating)
+    .sort((prev, next) => uniqueRating.length > 1 ? next.rating - prev.rating : 0.5 - Math.random())
+    .slice(0, 2);
 
     if (cards.length) {
+      contentElements.innerHTML = ``;
       this._renderCards(cards.slice(0, FilmCount.EXTRA), contentElements);
     } else {
       container.remove();
@@ -139,13 +151,15 @@ export default class PageController {
   // Рендер самых комментируемых фильмов
   _renderMostCommented(container, allCards) {
     const contentElements = container.querySelector(`.films-list__container`);
+    const uniqueCommentQuantity = [...new Set(allCards.map((card) => card.comments.length))];
     const cards = allCards
     .slice()
-    .sort((prev, next) => next.comments.length - prev.comments.length)
-    .slice(0, 2)
-    .filter((card) => card.comments.length);
+    .filter((card) => card.comments.length)
+    .sort((prev, next) => uniqueCommentQuantity.length > 1 ? next.comments.length - prev.comments.length : 0.5 - Math.random())
+    .slice(0, 2);
 
     if (cards.length) {
+      contentElements.innerHTML = ``;
       this._renderCards(cards.slice(0, FilmCount.EXTRA), contentElements);
     } else {
       container.remove();
@@ -153,13 +167,19 @@ export default class PageController {
   }
 
   // Обновление данных фильма
-  _onDataChange(movieController, oldCard, newCard) {
-    this._api.updateCard(oldCard.id, newCard)
+  _onDataChange(oldCard, newCard) {
+    return this._api.updateCard(oldCard.id, newCard)
     .then((cardModel) => {
       const isSuccess = this._movieModel.updateItem(oldCard.id, cardModel);
 
       if (isSuccess) {
-        movieController.render(cardModel);
+        if (this._showedAllMovieControllers[oldCard.id]) {
+          this._showedAllMovieControllers[oldCard.id].forEach((movieController) => movieController.render(cardModel));
+        }
+
+        this._allCards = this._movieModel.getItems();
+
+        this._renderExtraList();
         this._updateCards(this._showingCardsCount);
       }
     });
@@ -167,7 +187,9 @@ export default class PageController {
 
   // Установка состояния по умолчанию у всех movieController
   _onViewChange() {
-    this._showedMovieControllers.forEach((movieController) => movieController.setDefaultView());
+    this._showedAllMovieControllers.forEach((controllers) => {
+      controllers.forEach((movieController) => movieController.setDefaultView());
+    });
   }
 
   // Обновление данных после работы с фильтром

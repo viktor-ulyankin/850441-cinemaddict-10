@@ -1,3 +1,4 @@
+import {StatisticFilterType} from '../utils/const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {getStatisticTemplate} from '../templates/statistic.js';
 import Chart from 'chart.js';
@@ -8,17 +9,14 @@ export default class Statistic extends AbstractSmartComponent {
 
     this._cards = cards;
     this._rank = rank;
-    this._watchedCards = this._cards.filter((card) => card.isOnWatched);
-    this._watchedDuration = this._watchedCards.reduce((result, card) => result + card.runtime, 0);
-    this._quantityByGenres = this._getQuantityByGenres(this._watchedCards);
-    this._topGenre = this._getTopGenre(this._quantityByGenres);
-
+    this._currentFilter = StatisticFilterType.ALL.name;
+    this._setFilter();
     this._renderChart(this._quantityByGenres);
     this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return getStatisticTemplate(this._watchedCards, this._watchedDuration, this._topGenre, this._rank);
+    return getStatisticTemplate(this._watchedCards, this._watchedDuration, this._topGenre, this._rank, this._currentFilter);
   }
 
   _getQuantityByGenres(cards) {
@@ -80,9 +78,11 @@ export default class Statistic extends AbstractSmartComponent {
   }
 
   _subscribeOnEvents() {
-    this.getElement().querySelector(`.statistic__filters`).addEventListener(`change`, (evt) => {
+    this.getElement().querySelector(`.statistic__filters`).addEventListener(`click`, (evt) => {
       if (evt.target.classList.contains(`statistic__filters-input`)) {
+        this._setFilter(evt.target.value);
         this.rerender();
+        this.show();
       }
     });
   }
@@ -92,9 +92,37 @@ export default class Statistic extends AbstractSmartComponent {
     this._subscribeOnEvents();
   }
 
-  rerender() {
-    super.rerender();
+  _setFilter(filter) {
+    this._watchedCards = this._cards.filter((card) => card.isOnWatched);
 
-    this.show();
+    if (filter) {
+      let filterDate = 0;
+
+      switch (filter) {
+        case `today`:
+          filterDate = new Date();
+          filterDate.setDate(filterDate.getDate() - 1);
+          break;
+        case `week`:
+          filterDate = new Date();
+          filterDate.setDate(filterDate.getDate() - 7);
+          break;
+        case `month`:
+          filterDate = new Date();
+          filterDate.setDate(filterDate.getDate() - 30);
+          break;
+        case `year`:
+          filterDate = new Date();
+          filterDate.setDate(filterDate.getDate() - 365);
+          break;
+      }
+
+      this._watchedCards = this._watchedCards.filter((card) => card.watchingDate > filterDate);
+      this._currentFilter = filter;
+    }
+
+    this._watchedDuration = this._watchedCards.reduce((result, card) => result + card.runtime, 0);
+    this._quantityByGenres = this._getQuantityByGenres(this._watchedCards);
+    this._topGenre = this._getTopGenre(this._quantityByGenres);
   }
 }

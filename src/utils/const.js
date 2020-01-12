@@ -28,3 +28,26 @@ export const Emotion = new Set([
   `puke`,
   `angry`,
 ]);
+
+export const StatisticFilterType = {
+  ALL: {
+    name: `all-time`,
+    text: `All time`,
+  },
+  TODAY: {
+    name: `today`,
+    text: `Today`,
+  },
+  WEEK: {
+    name: `week`,
+    text: `Week`,
+  },
+  MONTH: {
+    name: `month`,
+    text: `Month`,
+  },
+  YEAR: {
+    name: `year`,
+    text: `Year`,
+  },
+};

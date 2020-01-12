@@ -22,25 +22,44 @@ export default class MovieController {
   }
 
   render(card) {
-    const toggleWatchList = (isChecked = true) => {
+    const toggleWatchList = (isChecked) => {
       const newCard = CardModel.clone(card);
 
-      newCard.isOnWatchList = isChecked;
-      this._onDataChange(this, card, newCard);
+      if (isChecked === undefined) {
+        newCard.isOnWatchList = !newCard.isOnWatchList;
+      } else {
+        newCard.isOnWatchList = isChecked;
+      }
+
+      this._onDataChange(card, newCard);
     };
 
-    const toggleWatched = (isChecked = true) => {
+    const toggleWatched = (isChecked) => {
       const newCard = CardModel.clone(card);
 
-      newCard.isOnWatched = isChecked;
-      this._onDataChange(this, card, newCard);
+      if (isChecked === undefined) {
+        newCard.isOnWatched = !(newCard.isOnWatched);
+      } else {
+        newCard.isOnWatched = isChecked;
+      }
+
+      if (newCard.isOnWatched) {
+        newCard.watchingDate = new Date();
+      }
+
+      this._onDataChange(card, newCard);
     };
 
-    const toggleFavorites = (isChecked = true) => {
+    const toggleFavorites = (isChecked) => {
       const newCard = CardModel.clone(card);
 
-      newCard.isOnFavorites = isChecked;
-      this._onDataChange(this, card, newCard);
+      if (isChecked === undefined) {
+        newCard.isOnFavorites = !newCard.isOnFavorites;
+      } else {
+        newCard.isOnFavorites = isChecked;
+      }
+
+      this._onDataChange(card, newCard);
     };
 
     const deleteComment = (numDeletedComment) => {
@@ -49,13 +68,12 @@ export default class MovieController {
         const newCard = CardModel.clone(card);
 
         newCard.comments.splice(numDeletedComment, 1);
-        this._onDataChange(this, card, newCard);
+        this._onDataChange(card, newCard);
       });
     };
 
     const addComment = (comment, emotion) => {
       const newComment = new CommentsModel({
-        author: `Viktor`,
         emotion,
         comment: he.encode(comment),
         date: new Date(),
@@ -63,15 +81,16 @@ export default class MovieController {
 
       return this._api.createComment(card.id, newComment)
       .then((response) => {
-        this._onDataChange(this, card, response.movie);
+        this._onDataChange(card, response.movie);
       });
     };
 
     const setRating = (rating) => {
-      return this._api.setRating(card.id, rating)
-      .then((response) => {
-        this._onDataChange(this, card, response.movie);
-      });
+      const newCard = CardModel.clone(card);
+
+      newCard.personalRating = rating;
+
+      return this._onDataChange(card, newCard);
     };
 
     const oldCardComponent = this._cardComponent;
@@ -117,7 +136,7 @@ export default class MovieController {
       this._cardComponent.render(this._containerForCard, RenderPosition.BEFOREEND);
     }
 
-    if (oldMovieComponent) {
+    if (oldMovieComponent && oldMovieComponent._element) {
       replace(this._movieComponent, oldMovieComponent);
       this._movieComponent.render(this._containerForMovie, RenderPosition.AFTEREND, card);
     }
@@ -129,6 +148,16 @@ export default class MovieController {
         this._commentComponent.onDeleteClick(deleteComment);
         this._commentComponent.onEnter(addComment);
       });
+    }
+
+    if (this._ratingFormComponent) {
+      this._ratingFormComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND);
+
+      if (card.isOnWatched) {
+        this._ratingFormComponent.show();
+      } else {
+        this._ratingFormComponent.hide();
+      }
     }
   }
 

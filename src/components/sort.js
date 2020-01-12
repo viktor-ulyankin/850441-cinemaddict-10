@@ -28,8 +28,12 @@ export default class Sort extends AbstractComponent {
       }
 
       this._currenSortType = sortType;
-
       handler(this._currenSortType);
+
+      const classActive = `sort__button--active`;
+
+      this.getElement().querySelector(`.${classActive}`).classList.remove(classActive);
+      evt.target.classList.add(classActive);
     });
   }
 }

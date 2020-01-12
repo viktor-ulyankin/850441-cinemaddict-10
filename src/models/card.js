@@ -43,7 +43,7 @@ export default class Card {
         'description': this.description,
       },
       'user_details': {
-        'personal_rating': this.personalRating,
+        'personal_rating': Number(this.personalRating),
         'watchlist': this.isOnWatchList,
         'already_watched': this.isOnWatched,
         'watching_date': this.watchingDate ? this.watchingDate.toISOString() : null,

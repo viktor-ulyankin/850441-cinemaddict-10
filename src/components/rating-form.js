@@ -13,6 +13,17 @@ export default class RatingForm extends AbstractComponent {
     super.render(container, place);
 
     this._isSending = false;
+
+    this.getElement().querySelector(`.film-details__watched-reset`).addEventListener(`click`, () => {
+      this._resetRadioInput();
+      this._toggleErrorStateForm(false);
+    });
+  }
+
+  _resetRadioInput() {
+    const elementRadioInput = this.getElement().querySelectorAll(`.film-details__user-rating-input`);
+
+    elementRadioInput[this._card.personalRating - 1].checked = true;
   }
 
   getTemplate() {
@@ -31,7 +42,7 @@ export default class RatingForm extends AbstractComponent {
   }
 
   onRatingClick(handler) {
-    document.querySelector(`.film-details__user-rating-score`).addEventListener(`change`, (evt) => {
+    this.getElement().querySelector(`.film-details__user-rating-score`).addEventListener(`change`, (evt) => {
       if (evt.target.classList.contains(`film-details__user-rating-input`) && !this._isSending) {
         this._isSending = true;
         this._toggleErrorStateForm(false);
@@ -42,8 +53,16 @@ export default class RatingForm extends AbstractComponent {
         }).catch(() => {
           this._toggleErrorStateForm(true);
           this._isSending = false;
+          this._resetRadioInput();
         });
       }
     });
+  }
+
+  hide() {
+    super.hide();
+
+    this._resetRadioInput();
+    this._toggleErrorStateForm(false);
   }
 }

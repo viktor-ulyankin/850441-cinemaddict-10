@@ -1,11 +1,12 @@
+import {getUserRank} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
 import {getUserRankTemplate} from '../templates/user-rank.js';
 
 export default class UserRank extends AbstractComponent {
-  constructor(rank = 0) {
+  constructor(quantity = 0) {
     super();
 
-    this._rank = rank;
+    this._rank = getUserRank(quantity);
   }
 
   getTemplate() {

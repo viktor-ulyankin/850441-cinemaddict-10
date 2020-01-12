@@ -37,10 +37,19 @@ export default class Comments extends AbstractComponent {
   }
 
   onDeleteClick(handler) {
+    const classLoading = `film-details__comment-delete--loading`;
+    const textLoading = `Deleting…`;
+
     this.getElement().querySelectorAll(`.film-details__comment-delete`).forEach((linkElement, index) => {
-      linkElement.addEventListener(`click`, (e) => {
-        e.preventDefault();
-        handler(index);
+      linkElement.addEventListener(`click`, (evt) => {
+        evt.preventDefault();
+
+        if (!evt.target.classList.contains(classLoading)) {
+          evt.target.classList.add(classLoading);
+          evt.target.textContent = textLoading;
+
+          handler(index);
+        }
       });
     });
   }

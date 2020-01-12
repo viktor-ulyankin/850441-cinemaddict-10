@@ -10,7 +10,6 @@ export default class Comments {
   toRAW() {
     return {
       'id': this.id,
-      'author': this.author,
       'emotion': this.emotion,
       'comment': this.comment,
       'date': this.date ? this.date.toISOString() : null,

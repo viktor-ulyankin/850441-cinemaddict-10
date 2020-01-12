@@ -9,6 +9,8 @@ export default class AbstractComponent {
     }
 
     this._element = null;
+    this._container = null;
+    this._place = null;
     this._classHidden = `visually-hidden`;
   }
 
@@ -29,7 +31,7 @@ export default class AbstractComponent {
   }
 
   render(container, place) {
-    if (container) {
+    if (container && place) {
       switch (place) {
         case RenderPosition.AFTERBEGIN:
           container.prepend(this.getElement());

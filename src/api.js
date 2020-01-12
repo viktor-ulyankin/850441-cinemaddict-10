@@ -55,16 +55,6 @@ export default class API {
     .then(CommentsModel.parseComments);
   }
 
-  setRating(movieId, rating) {
-    return this._load({
-      url: `rating/${movieId}`,
-      method: Method.POST,
-      body: rating,
-      headers: new Headers({'Content-Type': `application/json`})
-    })
-    .then((response) => response.json());
-  }
-
   _checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
       return response;

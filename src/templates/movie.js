@@ -2,8 +2,6 @@ import {formatFilmReleaseDate, getRuntimeByMinutes} from '../utils/common.js';
 
 
 export const getMovieTemplate = (card) => {
-  const description = card.description.length > 140 ? card.description.slice(0, 139) + `...` : card.description;
-
   const getGenresTemplate = (genres) => {
     return genres
     .map((genre) => `<span class="film-details__genre">${genre}</span>`)
@@ -21,7 +19,7 @@ export const getMovieTemplate = (card) => {
         <div class="film-details__poster">
           <img class="film-details__poster-img" src="${card.poster}" alt="${card.name}">
 
-          <p class="film-details__age">18+</p>
+          <p class="film-details__age">${card.ageRating}+</p>
         </div>
 
         <div class="film-details__info">
@@ -70,7 +68,7 @@ export const getMovieTemplate = (card) => {
           </table>
 
           <p class="film-details__film-description">
-            ${description}
+            ${card.description}
           </p>
         </div>
       </div>

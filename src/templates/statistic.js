@@ -1,12 +1,13 @@
-import {getRuntimeByMinutes} from '../utils/common.js';
+import {StatisticFilterType} from '../utils/const.js';
+import {getRuntimeByMinutes, getUserRank} from '../utils/common.js';
 
-const getRankTemplate = (rank) => {
-  if (rank) {
+const getRankTemplate = (watched) => {
+  if (watched) {
     return (
       `<p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">${rank}</span>
+      <span class="statistic__rank-label">${getUserRank(watched)}</span>
     </p>`
     );
   }
@@ -14,28 +15,23 @@ const getRankTemplate = (rank) => {
   return ``;
 };
 
-export const getStatisticTemplate = (cards, duration, topGenre, rank) => {
+const getStatisticItemsTemplate = (currentFilter) => {
+  return Object.values(StatisticFilterType).map((filter) => {
+    return (`<input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-${filter.name}" value="${filter.name}"${currentFilter === filter.name ? ` checked` : ``}>
+      <label for="statistic-${filter.name}" class="statistic__filters-label">${filter.text}</label>`);
+  })
+  .join(`\n`);
+};
+
+export const getStatisticTemplate = (cards, duration, topGenre, watched, currentFilter) => {
   return (
     `<section class="statistic visually-hidden">
-    ${getRankTemplate(rank)}
+    ${getRankTemplate(watched)}
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" checked>
-      <label for="statistic-all-time" class="statistic__filters-label">All time</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today">
-      <label for="statistic-today" class="statistic__filters-label">Today</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week">
-      <label for="statistic-week" class="statistic__filters-label">Week</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month">
-      <label for="statistic-month" class="statistic__filters-label">Month</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year">
-      <label for="statistic-year" class="statistic__filters-label">Year</label>
+      ${getStatisticItemsTemplate(currentFilter)}
     </form>
 
     <ul class="statistic__text-list">
