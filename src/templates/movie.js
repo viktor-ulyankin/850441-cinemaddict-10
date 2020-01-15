@@ -1,4 +1,5 @@
-import {formatFilmReleaseDate, getRuntimeByMinutes} from '../utils/common.js';
+import {FilterType} from "../utils/const.js";
+import {getFormatFilmReleaseDate, getRuntimeByMinutes} from '../utils/common.js';
 
 
 export const getMovieTemplate = (card) => {
@@ -49,7 +50,7 @@ export const getMovieTemplate = (card) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${formatFilmReleaseDate(card.releaseDate)}</td>
+              <td class="film-details__cell">${getFormatFilmReleaseDate(card.releaseDate)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
@@ -74,14 +75,14 @@ export const getMovieTemplate = (card) => {
       </div>
 
       <section class="film-details__controls">
-        <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist"${card.isOnWatchList ? ` checked` : ``}>
-        <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="${FilterType.WATCHLIST}" name="${FilterType.WATCHLIST}"${card.isOnWatchList ? ` checked` : ``}>
+        <label for="${FilterType.WATCHLIST}" class="film-details__control-label film-details__control-label--${FilterType.WATCHLIST}">Add to watchlist</label>
 
-        <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched"${card.isOnWatched ? ` checked` : ``}>
-        <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="${FilterType.WATCHED}" name="${FilterType.WATCHED}"${card.isOnWatched ? ` checked` : ``}>
+        <label for="${FilterType.WATCHED}" class="film-details__control-label film-details__control-label--${FilterType.WATCHED}">Already watched</label>
 
-        <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${card.isOnFavorites ? ` checked` : ``}>
-        <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="${FilterType.FAVORITE}" name="${FilterType.FAVORITE}"${card.isOnFavorites ? ` checked` : ``}>
+        <label for="${FilterType.FAVORITE}" class="film-details__control-label film-details__control-label--${FilterType.FAVORITE}">Add to favorites</label>
       </section>
     </div>
   </form>

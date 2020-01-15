@@ -27,11 +27,11 @@ export const remove = (component) => {
   }
 };
 
-export const formatFilmReleaseDate = (date) => moment(date).format(`DD MMMM YYYY`);
+export const getFormatFilmReleaseDate = (date) => moment(date).format(`DD MMMM YYYY`);
 
-export const formatFilmReleaseYear = (date) => moment(date).format(`YYYY`);
+export const getFormatFilmReleaseYear = (date) => moment(date).format(`YYYY`);
 
-export const formatCommentDate = (date) => moment(date).format(`YYYY/MM/DD HH:MM`);
+export const getFormatCommentDate = (date) => moment(date).format(`YYYY/MM/DD HH:MM`);
 
 export const getRuntimeByMinutes = (minutes, wordClassContainer) => {
   if (wordClassContainer) {

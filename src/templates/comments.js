@@ -1,4 +1,4 @@
-import {formatCommentDate} from "../utils/common.js";
+import {getFormatCommentDate} from "../utils/common.js";
 import {Emotion} from "../utils/const.js";
 
 export const getCommentsTemplate = (comments) => {
@@ -29,8 +29,8 @@ export const getCommentsTemplate = (comments) => {
 
 const getItemsTemplate = (comments) => {
   return comments
-  .map((comment) => {
-    return (`<li class="film-details__comment">
+  .map((comment, index) => {
+    return (`<li class="film-details__comment" data-num="${index}">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji">
             </span>
@@ -38,7 +38,7 @@ const getItemsTemplate = (comments) => {
               <p class="film-details__comment-text">${comment.comment}</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${comment.author}</span>
-                <span class="film-details__comment-day">${formatCommentDate(comment.date)}</span>
+                <span class="film-details__comment-day">${getFormatCommentDate(comment.date)}</span>
                 <button class="film-details__comment-delete">Delete</button>
               </p>
             </div>

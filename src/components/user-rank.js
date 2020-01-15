@@ -9,7 +9,7 @@ export default class UserRank extends AbstractComponent {
     this._rank = getUserRank(quantity);
   }
 
-  getTemplate() {
+  _getTemplate() {
     return getUserRankTemplate(this._rank);
   }
 }

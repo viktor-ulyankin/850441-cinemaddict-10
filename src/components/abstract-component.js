@@ -1,5 +1,5 @@
 import {createElement} from '../utils/common.js';
-import {RenderPosition} from "../utils/const";
+import {RenderPosition} from "../utils/const.js";
 
 
 export default class AbstractComponent {
@@ -9,24 +9,23 @@ export default class AbstractComponent {
     }
 
     this._element = null;
-    this._container = null;
-    this._place = null;
     this._classHidden = `visually-hidden`;
   }
 
-  getTemplate() {
+  _getTemplate() {
     throw new Error(`Abstract method not implemented: getTemplate`);
   }
 
   getElement() {
     if (!this._element) {
-      this._element = createElement(this.getTemplate());
+      this._element = createElement(this._getTemplate());
     }
 
     return this._element;
   }
 
   remove() {
+    this._removeEventListeners();
     this._element = null;
   }
 
@@ -57,4 +56,6 @@ export default class AbstractComponent {
       this._element.classList.add(this._classHidden);
     }
   }
+
+  _removeEventListeners() {}
 }

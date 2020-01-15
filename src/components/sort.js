@@ -7,33 +7,43 @@ export default class Sort extends AbstractComponent {
     super();
 
     this._currenSortType = SortType.DEFAULT;
+    this._onChangeSortTypeHandler = null;
+    this._onChangeSortType = this._onChangeSortType.bind(this);
   }
 
-  getTemplate() {
+  _getTemplate() {
     return getSortTemplate();
   }
 
+  _onChangeSortType(evt) {
+    evt.preventDefault();
+
+    if (evt.target.tagName !== `A`) {
+      return;
+    }
+
+    const sortType = evt.target.getAttribute(`data-sort-type`);
+
+    if (this._currenSortType === sortType) {
+      return;
+    }
+
+    this._currenSortType = sortType;
+    this._onChangeSortTypeHandler(this._currenSortType);
+
+    const classActive = `sort__button--active`;
+
+    this.getElement().querySelector(`.${classActive}`).classList.remove(classActive);
+    evt.target.classList.add(classActive);
+  }
+
   onChangeSortType(handler) {
-    this.getElement().addEventListener(`click`, (evt) => {
-      evt.preventDefault();
+    this._onChangeSortTypeHandler = handler;
 
-      if (evt.target.tagName !== `A`) {
-        return;
-      }
+    this.getElement().addEventListener(`click`, this._onChangeSortType);
+  }
 
-      const sortType = evt.target.dataset.sortType;
-
-      if (this._currenSortType === sortType) {
-        return;
-      }
-
-      this._currenSortType = sortType;
-      handler(this._currenSortType);
-
-      const classActive = `sort__button--active`;
-
-      this.getElement().querySelector(`.${classActive}`).classList.remove(classActive);
-      evt.target.classList.add(classActive);
-    });
+  _removeEventListeners() {
+    this.getElement().removeEventListener(`click`, this._onChangeSortType);
   }
 }

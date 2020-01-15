@@ -2,31 +2,37 @@ import AbstractComponent from './abstract-component.js';
 import {getRatingFormTemplate} from '../templates/rating-form.js';
 
 export default class RatingForm extends AbstractComponent {
-  constructor(card) {
+  constructor() {
     super();
 
-    this._card = card;
+    this._card = null;
     this._isSending = false;
+    this._onRatingClickHandler = null;
+    this._onRatingClick = this._onRatingClick.bind(this);
+    this._onResetClick = this._onResetClick.bind(this);
   }
 
-  render(container, place) {
+  render(card, container, place) {
+    this._card = card;
+
     super.render(container, place);
 
     this._isSending = false;
 
-    this.getElement().querySelector(`.film-details__watched-reset`).addEventListener(`click`, () => {
-      this._resetRadioInput();
-      this._toggleErrorStateForm(false);
-    });
+    this._subscribeOnEvents();
   }
 
   _resetRadioInput() {
-    const elementRadioInput = this.getElement().querySelectorAll(`.film-details__user-rating-input`);
+    if (this._card.isOnWatched) {
+      const elementRadioInput = this.getElement().querySelectorAll(`.film-details__user-rating-input`);
 
-    elementRadioInput[this._card.personalRating - 1].checked = true;
+      if (this._card.personalRating) {
+        elementRadioInput[this._card.personalRating - 1].checked = true;
+      }
+    }
   }
 
-  getTemplate() {
+  _getTemplate() {
     return getRatingFormTemplate(this._card);
   }
 
@@ -41,22 +47,33 @@ export default class RatingForm extends AbstractComponent {
     }
   }
 
-  onRatingClick(handler) {
-    this.getElement().querySelector(`.film-details__user-rating-score`).addEventListener(`change`, (evt) => {
-      if (evt.target.classList.contains(`film-details__user-rating-input`) && !this._isSending) {
-        this._isSending = true;
-        this._toggleErrorStateForm(false);
+  _onRatingClick(evt) {
+    if (evt.target.classList.contains(`film-details__user-rating-input`) && !this._isSending) {
+      this._isSending = true;
+      this._toggleErrorStateForm(false);
 
-        handler(evt.target.value)
-        .then(() => {
-          this._toggleErrorStateForm(false);
-        }).catch(() => {
-          this._toggleErrorStateForm(true);
-          this._isSending = false;
-          this._resetRadioInput();
-        });
-      }
-    });
+      this._onRatingClickHandler(evt.target.value)
+      .then(() => {
+        this._toggleErrorStateForm(false);
+      }).catch(() => {
+        this._toggleErrorStateForm(true);
+        this._isSending = false;
+        this._resetRadioInput();
+      });
+    }
+  }
+
+  onRatingClick(handler) {
+    this._onRatingClickHandler = handler;
+
+    this.getElement().querySelector(`.film-details__user-rating-score`).addEventListener(`change`, this._onRatingClick);
+  }
+
+  show() {
+    super.show();
+
+    this._resetRadioInput();
+    this._toggleErrorStateForm(false);
   }
 
   hide() {
@@ -64,5 +81,21 @@ export default class RatingForm extends AbstractComponent {
 
     this._resetRadioInput();
     this._toggleErrorStateForm(false);
+  }
+
+  _onResetClick() {
+    this._resetRadioInput();
+    this._toggleErrorStateForm(false);
+  }
+
+  _subscribeOnEvents() {
+    this.getElement().querySelector(`.film-details__watched-reset`).addEventListener(`click`, this._onResetClick);
+  }
+
+  _removeEventListeners() {
+    const element = this.getElement();
+
+    element.querySelector(`.film-details__user-rating-score`).removeEventListener(`change`, this._onRatingClick);
+    element.querySelector(`.film-details__watched-reset`).removeEventListener(`click`, this._onResetClick);
   }
 }

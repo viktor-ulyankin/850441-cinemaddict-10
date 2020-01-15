@@ -10,6 +10,7 @@ import he from 'he';
 
 export default class MovieController {
   constructor(containerForCard, containerForMovie, onDataChange, onViewChange, api) {
+    this._card = null;
     this._containerForCard = containerForCard;
     this._containerForMovie = containerForMovie;
     this._onDataChange = onDataChange;
@@ -22,8 +23,10 @@ export default class MovieController {
   }
 
   render(card) {
+    this._card = card;
+
     const toggleWatchList = (isChecked) => {
-      const newCard = CardModel.clone(card);
+      const newCard = CardModel.clone(this._card);
 
       if (isChecked === undefined) {
         newCard.isOnWatchList = !newCard.isOnWatchList;
@@ -31,11 +34,11 @@ export default class MovieController {
         newCard.isOnWatchList = isChecked;
       }
 
-      this._onDataChange(card, newCard);
+      this._onDataChange(this._card, newCard);
     };
 
     const toggleWatched = (isChecked) => {
-      const newCard = CardModel.clone(card);
+      const newCard = CardModel.clone(this._card);
 
       if (isChecked === undefined) {
         newCard.isOnWatched = !(newCard.isOnWatched);
@@ -47,11 +50,11 @@ export default class MovieController {
         newCard.watchingDate = new Date();
       }
 
-      this._onDataChange(card, newCard);
+      this._onDataChange(this._card, newCard);
     };
 
     const toggleFavorites = (isChecked) => {
-      const newCard = CardModel.clone(card);
+      const newCard = CardModel.clone(this._card);
 
       if (isChecked === undefined) {
         newCard.isOnFavorites = !newCard.isOnFavorites;
@@ -59,16 +62,16 @@ export default class MovieController {
         newCard.isOnFavorites = isChecked;
       }
 
-      this._onDataChange(card, newCard);
+      this._onDataChange(this._card, newCard);
     };
 
     const deleteComment = (numDeletedComment) => {
-      this._api.deleteComment(card.comments[numDeletedComment])
+      this._api.deleteComment(this._card.comments[numDeletedComment])
       .then(() => {
-        const newCard = CardModel.clone(card);
+        const newCard = CardModel.clone(this._card);
 
         newCard.comments.splice(numDeletedComment, 1);
-        this._onDataChange(card, newCard);
+        this._onDataChange(this._card, newCard);
       });
     };
 
@@ -79,45 +82,51 @@ export default class MovieController {
         date: new Date(),
       });
 
-      return this._api.createComment(card.id, newComment)
+      return this._api.createComment(this._card.id, newComment)
       .then((response) => {
-        this._onDataChange(card, response.movie);
+        this._onDataChange(this._card, response.movie);
       });
     };
 
     const setRating = (rating) => {
-      const newCard = CardModel.clone(card);
+      const newCard = CardModel.clone(this._card);
 
       newCard.personalRating = rating;
 
-      return this._onDataChange(card, newCard);
+      return this._onDataChange(this._card, newCard);
+    };
+
+    const movieComponentClose = () => {
+      remove(this._commentComponent);
+      remove(this._ratingFormComponent);
     };
 
     const oldCardComponent = this._cardComponent;
     const oldMovieComponent = this._movieComponent;
 
-    this._cardComponent = new CardComponent(card);
+    this._cardComponent = new CardComponent(this._card);
 
     this._cardComponent.onClick(() => {
       this._onViewChange();
 
       this._movieComponent = new MovieComponent();
+      this._movieComponent.onClose(movieComponentClose);
       this._movieComponent.onWatchListClick(toggleWatchList);
       this._movieComponent.onWatchedClick(toggleWatched);
       this._movieComponent.onFavoriteClick(toggleFavorites);
-      this._movieComponent.render(this._containerForMovie, RenderPosition.AFTEREND, card);
+      this._movieComponent.render(this._containerForMovie, RenderPosition.AFTEREND, this._card);
 
-      this._ratingFormComponent = new RatingFormComponent(card);
-      this._ratingFormComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND);
+      this._ratingFormComponent = new RatingFormComponent();
+      this._ratingFormComponent.render(this._card, this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND);
       this._ratingFormComponent.onRatingClick(setRating);
 
-      if (card.isOnWatched) {
+      if (this._card.isOnWatched) {
         this._ratingFormComponent.show();
       } else {
         this._ratingFormComponent.hide();
       }
 
-      this._api.getComments(card.id)
+      this._api.getComments(this._card.id)
       .then((comments) => {
         this._commentComponent = new CommentsComponent();
         this._commentComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND, comments);
@@ -138,11 +147,11 @@ export default class MovieController {
 
     if (oldMovieComponent && oldMovieComponent._element) {
       replace(this._movieComponent, oldMovieComponent);
-      this._movieComponent.render(this._containerForMovie, RenderPosition.AFTEREND, card);
+      this._movieComponent.render(this._containerForMovie, RenderPosition.AFTEREND, this._card);
     }
 
     if (this._commentComponent) {
-      this._api.getComments(card.id)
+      this._api.getComments(this._card.id)
       .then((comments) => {
         this._commentComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND, comments);
         this._commentComponent.onDeleteClick(deleteComment);
@@ -151,9 +160,9 @@ export default class MovieController {
     }
 
     if (this._ratingFormComponent) {
-      this._ratingFormComponent.render(this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND);
+      this._ratingFormComponent.render(this._card, this._movieComponent.getElement().querySelector(`.film-details__inner`), RenderPosition.BEFOREEND);
 
-      if (card.isOnWatched) {
+      if (this._card.isOnWatched) {
         this._ratingFormComponent.show();
       } else {
         this._ratingFormComponent.hide();

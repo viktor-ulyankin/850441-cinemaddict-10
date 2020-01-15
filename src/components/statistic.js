@@ -10,12 +10,13 @@ export default class Statistic extends AbstractSmartComponent {
     this._cards = cards;
     this._rank = rank;
     this._currentFilter = StatisticFilterType.ALL.name;
+    this._onFilterClick = this._onFilterClick.bind(this);
     this._setFilter();
     this._renderChart(this._quantityByGenres);
     this._subscribeOnEvents();
   }
 
-  getTemplate() {
+  _getTemplate() {
     return getStatisticTemplate(this._watchedCards, this._watchedDuration, this._topGenre, this._rank, this._currentFilter);
   }
 
@@ -77,17 +78,23 @@ export default class Statistic extends AbstractSmartComponent {
     return false;
   }
 
-  _subscribeOnEvents() {
-    this.getElement().querySelector(`.statistic__filters`).addEventListener(`click`, (evt) => {
-      if (evt.target.classList.contains(`statistic__filters-input`)) {
-        this._setFilter(evt.target.value);
-        this.rerender();
-        this.show();
-      }
-    });
+  _onFilterClick(evt) {
+    if (evt.target.classList.contains(`statistic__filters-input`)) {
+      this._setFilter(evt.target.value);
+      this.rerender();
+      this.show();
+    }
   }
 
-  recoveryListeners() {
+  _subscribeOnEvents() {
+    this.getElement().querySelector(`.statistic__filters`).addEventListener(`click`, this._onFilterClick);
+  }
+
+  _removeEventListeners() {
+    this.getElement().querySelector(`.statistic__filters`).removeEventListener(`click`, this._onFilterClick);
+  }
+
+  _recoveryListeners() {
     this._renderChart(this._quantityByGenres);
     this._subscribeOnEvents();
   }
@@ -99,19 +106,19 @@ export default class Statistic extends AbstractSmartComponent {
       let filterDate = 0;
 
       switch (filter) {
-        case `today`:
+        case StatisticFilterType.TODAY.name:
           filterDate = new Date();
           filterDate.setDate(filterDate.getDate() - 1);
           break;
-        case `week`:
+        case StatisticFilterType.WEEK.name:
           filterDate = new Date();
           filterDate.setDate(filterDate.getDate() - 7);
           break;
-        case `month`:
+        case StatisticFilterType.MONTH.name:
           filterDate = new Date();
           filterDate.setDate(filterDate.getDate() - 30);
           break;
-        case `year`:
+        case StatisticFilterType.YEAR.name:
           filterDate = new Date();
           filterDate.setDate(filterDate.getDate() - 365);
           break;

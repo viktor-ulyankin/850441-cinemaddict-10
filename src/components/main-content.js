@@ -8,7 +8,7 @@ export default class MainContent extends AbstractComponent {
     this._cardQuantity = cardQuantity;
   }
 
-  getTemplate() {
+  _getTemplate() {
     return getMainContentTemplate(this._cardQuantity);
   }
 }

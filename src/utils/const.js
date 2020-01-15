@@ -18,8 +18,8 @@ export const SortType = {
 export const FilterType = {
   ALL: `all`,
   WATCHLIST: `watchlist`,
-  HISTORY: `history`,
-  FAVORITES: `favorites`,
+  WATCHED: `watched`,
+  FAVORITE: `favorite`,
 };
 
 export const Emotion = new Set([

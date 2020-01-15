@@ -1,4 +1,4 @@
-import {formatFilmReleaseYear, getRuntimeByMinutes} from '../utils/common.js';
+import {getFormatFilmReleaseYear, getRuntimeByMinutes} from '../utils/common.js';
 
 export const getCardTemplate = (card) => {
   const {name, poster, description, releaseDate, rating, runtime, genres, comments} = card;
@@ -8,7 +8,7 @@ export const getCardTemplate = (card) => {
           <h3 class="film-card__title">${name}</h3>
           <p class="film-card__rating">${rating}</p>
           <p class="film-card__info">
-            <span class="film-card__year">${formatFilmReleaseYear(releaseDate)}</span>
+            <span class="film-card__year">${getFormatFilmReleaseYear(releaseDate)}</span>
             <span class="film-card__duration">${getRuntimeByMinutes(runtime)}</span>
             <span class="film-card__genre">${genres.join(`, `)}</span>
           </p>

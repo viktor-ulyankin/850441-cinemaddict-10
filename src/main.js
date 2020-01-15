@@ -22,7 +22,7 @@ api.getCards()
 
   mainElement.querySelector(`.films`).remove();
 
-  const quantityWatchedMovie = getCardsByFilter(cards, FilterType.HISTORY).length;
+  const quantityWatchedMovie = getCardsByFilter(cards, FilterType.WATCHED).length;
   const filterController = new FilterController(mainElement, movieModel);
   const pageController = new PageController(mainElement, movieModel, quantityWatchedMovie, api);
 

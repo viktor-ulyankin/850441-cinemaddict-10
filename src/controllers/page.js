@@ -25,14 +25,16 @@ export default class PageController {
     this._showedMainMovieControllers = [];
     this._filmListContainerElement = null;
     this._showingCardsCount = 0;
+    this._sortTypeMainList = SortType.DEFAULT;
   }
 
   render() {
     // Рендер сортировки
     this._sortComponent.render(this._container, RenderPosition.BEFOREEND);
     this._sortComponent.onChangeSortType((sortType) => {
-      this._removeCards();
-      this._renderCards(this._getSortedCards(sortType).slice(0, this._showingCardsCount));
+      this._sortTypeMainList = sortType;
+      this._removeMainCards();
+      this._renderCards(this._getSortedCards(this._sortTypeMainList).slice(0, this._showingCardsCount));
     });
 
     // Рендер контейнеров для списков фильмов
@@ -94,16 +96,16 @@ export default class PageController {
     });
   }
 
-  // Обновление главного списка фильмов
+  // Обновление фильмов
   _updateCards(count) {
-    this._removeCards();
+    this._removeMainCards();
     this._renderCards(this._movieModel.getItems().slice(0, count));
     this._showingCardsCount = count;
     this._renderShowMoreButton();
   }
 
   // Удаление фильмов из главного списка
-  _removeCards() {
+  _removeMainCards() {
     this._showedMainMovieControllers.forEach((movieController) => movieController.destroy());
     this._showedMainMovieControllers = [];
   }
@@ -119,7 +121,7 @@ export default class PageController {
     this._showMoreButtonComponent.render(this._filmListContainerElement, RenderPosition.AFTEREND);
     this._showMoreButtonComponent.onClick(() => {
       const prevCardsCount = this._showingCardsCount;
-      const cards = this._movieModel.getItems();
+      const cards = this._getSortedCards(this._sortTypeMainList);
 
       this._renderCards(cards.slice(prevCardsCount, this._showingCardsCount + FilmCount.LIST));
       this._showingCardsCount += FilmCount.LIST;
