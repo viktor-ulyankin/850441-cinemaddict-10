@@ -5,7 +5,12 @@ const Method = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
-  DELETE: `DELETE`
+  DELETE: `DELETE`,
+};
+
+const ResponseStatus = {
+  SUCCESS_MIN: 200,
+  SUCCESS_MAX: 300,
 };
 
 export default class API {
@@ -56,7 +61,7 @@ export default class API {
   }
 
   _checkStatus(response) {
-    if (response.status >= 200 && response.status < 300) {
+    if (response.status >= ResponseStatus.SUCCESS_MIN && response.status < ResponseStatus.SUCCESS_MAX) {
       return response;
     } else {
       throw new Error(`${response.status}: ${response.statusText}`);

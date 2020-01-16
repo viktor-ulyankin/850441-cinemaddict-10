@@ -106,7 +106,7 @@ export default class MovieController {
 
     this._cardComponent = new CardComponent(this._card);
 
-    this._cardComponent.onClick(() => {
+    this._cardComponent.onCardClick(() => {
       this._onViewChange();
 
       this._movieComponent = new MovieComponent();

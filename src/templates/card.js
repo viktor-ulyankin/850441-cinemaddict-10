@@ -1,5 +1,7 @@
 import {getFormatFilmReleaseYear, getRuntimeByMinutes} from '../utils/common.js';
 
+const MAX_DESCRIPTION_LENGTH = 140;
+
 export const getCardTemplate = (card) => {
   const {name, poster, description, releaseDate, rating, runtime, genres, comments} = card;
 
@@ -13,7 +15,7 @@ export const getCardTemplate = (card) => {
             <span class="film-card__genre">${genres.join(`, `)}</span>
           </p>
           <img src="${poster}" alt="${name}" class="film-card__poster">
-          <p class="film-card__description">${description.length > 140 ? description.slice(0, 139) + `...` : description}</p>
+          <p class="film-card__description">${description.length > MAX_DESCRIPTION_LENGTH ? description.slice(0, MAX_DESCRIPTION_LENGTH - 1) + `...` : description}</p>
           <a class="film-card__comments">${comments.length} comments</a>
           <form class="film-card__controls">
             <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>

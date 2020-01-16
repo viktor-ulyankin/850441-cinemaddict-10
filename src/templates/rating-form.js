@@ -1,3 +1,5 @@
+const MAX_RATING = 9;
+
 export const getRatingFormTemplate = (card) => {
   return (`<div class="form-details__middle-container">
       <section class="film-details__user-rating-wrap">
@@ -25,7 +27,7 @@ export const getRatingFormTemplate = (card) => {
 };
 
 const getItemsFormTemplate = (card) => {
-  return Array(9).fill(0).map((item, index) => {
+  return Array(MAX_RATING).fill(0).map((item, index) => {
     const value = index + 1;
 
     return (`<input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${value}" id="rating-${value}" ${card.personalRating === value ? ` checked` : ``}>

@@ -9,7 +9,7 @@ export default class Card extends AbstractComponent {
     this._onWatchListClick = this._onWatchListClick.bind(this);
     this._onWatchedClick = this._onWatchedClick.bind(this);
     this._onFavoriteClick = this._onFavoriteClick.bind(this);
-    this._onClickHandler = null;
+    this._onCardClickHandler = null;
     this._onWatchListClickHandler = null;
     this._onWatchedClickHandler = null;
     this._onFavoriteClickHandler = null;
@@ -34,14 +34,14 @@ export default class Card extends AbstractComponent {
     this._onFavoriteClickHandler();
   }
 
-  onClick(handler) {
-    this._onClickHandler = handler;
+  onCardClick(handler) {
+    this._onCardClickHandler = handler;
 
     const element = this.getElement();
 
-    element.querySelector(`.film-card__poster`).addEventListener(`click`, this._onClickHandler);
-    element.querySelector(`.film-card__title`).addEventListener(`click`, this._onClickHandler);
-    element.querySelector(`.film-card__comments`).addEventListener(`click`, this._onClickHandler);
+    element.querySelector(`.film-card__poster`).addEventListener(`click`, this._onCardClickHandler);
+    element.querySelector(`.film-card__title`).addEventListener(`click`, this._onCardClickHandler);
+    element.querySelector(`.film-card__comments`).addEventListener(`click`, this._onCardClickHandler);
   }
 
   onWatchListClick(handler) {
@@ -65,9 +65,9 @@ export default class Card extends AbstractComponent {
   _removeEventListeners() {
     const element = this.getElement();
 
-    element.querySelector(`.film-card__poster`).removeEventListener(`click`, this._onClickHandler);
-    element.querySelector(`.film-card__title`).removeEventListener(`click`, this._onClickHandler);
-    element.querySelector(`.film-card__comments`).removeEventListener(`click`, this._onClickHandler);
+    element.querySelector(`.film-card__poster`).removeEventListener(`click`, this._onCardClickHandler);
+    element.querySelector(`.film-card__title`).removeEventListener(`click`, this._onCardClickHandler);
+    element.querySelector(`.film-card__comments`).removeEventListener(`click`, this._onCardClickHandler);
     element.querySelector(`.film-card__controls-item--add-to-watchlist`).removeEventListener(`click`, this._onWatchListClick);
     element.querySelector(`.film-card__controls-item--mark-as-watched`).removeEventListener(`click`, this._onWatchedClick);
     element.querySelector(`.film-card__controls-item--favorite`).removeEventListener(`click`, this._onFavoriteClick);
